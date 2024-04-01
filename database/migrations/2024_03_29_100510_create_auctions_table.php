@@ -15,8 +15,10 @@ return new class extends Migration
             $table->unsignedBigInteger('auction_id');
             $table->decimal('starting_price', 8, 2);
             $table->decimal('current_highest_bid', 8, 2)->nullable();
-            $table->timestamp('auction_end_time');
-            $table->timestamp('auction_start_time');
+            $table->timestamp('auction_start_time')->nullable();
+            $table->timestamp('auction_end_time')->nullable();
+//            $table->timestamp('auction_end_time');
+//            $table->timestamp('auction_start_time');
             $table->unsignedBigInteger('product_id');
             $table->unsignedBigInteger('store_id');
             $table->timestamps();
