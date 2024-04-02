@@ -16,6 +16,7 @@ class GoogleAuthController extends Controller
         return Socialite::driver($provider)->redirect();
     }
 
+
     public function callback($provider)
     {
         {
@@ -36,9 +37,7 @@ class GoogleAuthController extends Controller
                 ]
             );
 
-            Auth::login($user);
-
-            return redirect('http://localhost:3000/landing');
+            return redirect('http://localhost:3000/landing?username='.$user->username.'&email='.$user->email.'&user_type='.$user->user_type.'&phone='.$user->phone);
 
 
         }
