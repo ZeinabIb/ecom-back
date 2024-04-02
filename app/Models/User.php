@@ -22,9 +22,9 @@ class User extends Authenticatable
         'email',
         'password',
         'user_type',
-        'google_id',
-        'microsoft',
-        'address',
+        'provider',
+        'provider_id',
+        'provider_token',
         'email_verified_at',
         'phone',
     ];
