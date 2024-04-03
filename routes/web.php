@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
-use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,8 +17,12 @@ use App\Http\Controllers\GoogleAuthController;
 
 Route::get('/', function () {return view('welcome');});
 
-Route::get('/auth/{provider}/redirect', [GoogleAuthController::class, 'redirect']);
+Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirect']);
 
-Route::get('/auth/{provider}/callback', [GoogleAuthController::class, 'callback']);
+Route::get('/auth/{provider}/callback', [AuthController::class, 'callback']);
+
+Route::put('/user/update', [AuthController::class, 'updatePhone']);
+
+//Auth::routes('verify' => true)
 
 
