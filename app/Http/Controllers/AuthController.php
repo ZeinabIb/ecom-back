@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
@@ -12,8 +13,11 @@ use Carbon\Carbon;
 
 class AuthController extends Controller
 {
-    public function redirect($provider)
+    public function redirect($provider, Request $request)
     {
+        session(['userType' => $request->query('userType')]);
+        Cache::put('temp_user_type_', $request->query('userType'), now()->addMinutes(10));
+        \Log::debug('Setting userType in session', ['userType' => $request->query('userType')]);
         return Socialite::driver($provider)->redirect();
     }
 
@@ -21,7 +25,9 @@ class AuthController extends Controller
     public function callback($provider)
     {
         {
+            \Log::debug('Retrieved userType from session', ['userType' => session('userType')]);
             $socialUser = Socialite::driver($provider)->stateless()->user();
+            $userType = session('userType', Cache::get('temp_user_type_', 'defaultType'));
 
             $user = User::firstOrCreate(
                 ['email' => $socialUser->getEmail()],
@@ -29,7 +35,7 @@ class AuthController extends Controller
                     'username' => $socialUser->getName(),
                     'email' => $socialUser->getEmail(),
                     'password' => null,
-                    'user_type' => 'default',
+                    'user_type' => $userType,
                     'provider' => $provider,
                     'provider_id' => $socialUser->getId(),
                     'provider_token' => $socialUser->token,
@@ -37,8 +43,10 @@ class AuthController extends Controller
                     'phone' => null,
                 ]
             );
+            session()->forget('userType');
 
             return redirect('http://localhost:3000/landing?username='.$user->username.'&email='.$user->email.'&user_type='.$user->user_type.'&phone='.$user->phone);
+            Cache::forget('userType');
 
 
         }
