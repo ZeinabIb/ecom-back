@@ -21,8 +21,5 @@ Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirect']);
 
 Route::get('/auth/{provider}/callback', [AuthController::class, 'callback']);
 
-Route::put('/user/update', [AuthController::class, 'updatePhone']);
-
-//Auth::routes('verify' => true)
 
 

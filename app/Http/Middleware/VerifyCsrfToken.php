@@ -15,6 +15,7 @@ class VerifyCsrfToken extends Middleware
         'auth/google/callback',
         'auth/microsoft/callback',
         '/user/update',
+        '/*'
 
 
     ];
