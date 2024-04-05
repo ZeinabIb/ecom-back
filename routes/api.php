@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StoreController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,3 +20,5 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::middleware('auth:sanctum')->put('/user/update', [AuthController::class, 'updatePhone']);
+
+Route::middleware('auth:sanctum')->post('/seller/addStore', [StoreController::class, 'addStore']);
