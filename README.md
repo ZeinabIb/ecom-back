@@ -46,3 +46,14 @@ GOOGLE_REDIRECT_URI=http://127.0.0.1:8000/auth/google/callback
 MICROSOFT_CLIENT_ID=2208ad6d-0e62-4d17-8562-3d3cc42217d7
 MICROSOFT_CLIENT_SECRET=XIC8Q~lHIToaXrXacIUU6kAef1UQmuWFIMQLVa5G
 MICROSOFT_REDIRECT_URI=http://localhost:8000/auth/microsoft/callback
+
+The mailer stuff already exists so just replace them with this:
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=ralphdaher6@gmail.com
+MAIL_PASSWORD=nyyhzsnhjektdbct
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=ralphdaher6@gmail.com
+MAIL_FROM_NAME="Ecommerce Mail"
