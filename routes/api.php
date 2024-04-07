@@ -18,7 +18,21 @@ use Illuminate\Support\Facades\Route;
 
 
 
-
+// user (EVERYONE)
 Route::middleware('auth:sanctum')->put('/user/update', [AuthController::class, 'updatePhone']);
+Route::middleware('auth:sanctum')->get('/user/getAllApprovedStores', [StoreController::class, 'getAllApprovedStores']);
+Route::middleware('auth:sanctum')->get('/user/getCategoriesForStore/{store_id}', [StoreController::class, 'getCategoriesForStore']);
 
+
+// seller
 Route::middleware('auth:sanctum')->post('/seller/addStore', [StoreController::class, 'addStore']);
+Route::middleware('auth:sanctum')->get('/seller/getAllStoresForBuyer', [StoreController::class, 'getAllStoresForBuyer']);
+Route::middleware('auth:sanctum')->post('/seller/addCategory', [StoreController::class, 'addCategory']);
+Route::middleware('auth:sanctum')->post('/seller/deleteCategory', [StoreController::class, 'deleteCategory']);
+
+//buyer
+
+
+// admin
+Route::middleware('auth:sanctum')->post('/admin/reviewStore', [StoreController::class, 'reviewStore']);
+Route::middleware('auth:sanctum')->get('/admin/getAllStores', [StoreController::class, 'getAllStores']);
