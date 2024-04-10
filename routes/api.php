@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Route;
 // user (EVERYONE)
 Route::middleware('auth:sanctum')->put('/user/update', [AuthController::class, 'updatePhone']);
 Route::middleware('auth:sanctum')->get('/user/getAllApprovedStores', [StoreController::class, 'getAllApprovedStores']);
+Route::middleware('auth:sanctum')->get('/user/getStore/{store_id}', [StoreController::class, 'getStore']);
 Route::middleware('auth:sanctum')->get('/user/getCategoriesForStore/{store_id}', [StoreController::class, 'getCategoriesForStore']);
 Route::middleware('auth:sanctum')->get('/user/getProducts/{store_id}', [StoreController::class, 'getProducts']);
 

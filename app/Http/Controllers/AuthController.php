@@ -49,7 +49,7 @@ class AuthController extends Controller
             session()->forget('userType');
             $token = $user->createToken('Personal Access Token')->plainTextToken;
 
-            return redirect('http://localhost:3000/landing?username='.$user->username.'&email='.$user->email.'&user_type='.$user->user_type.'&phone='.$user->phone.'&token='.$token);
+            return redirect('http://localhost:3000/landing?username='.$user->username.'&email='.$user->email.'&user_type='.$user->user_type.'&phone='.$user->phone.'&id='.$user->id.'&token='.$token);
 
 
 

@@ -92,9 +92,17 @@ class StoreController extends Controller
 
     public function getAllApprovedStores(){
         if(auth()->user()){
-            $stores = Store::All()
-            ->where('store_status', "approved");
+            $stores = Store::where('store_status', "approved")->get()->toArray();;
             return response()->json(['message' => 'Approved stores retreived successfully', 'data' => $stores], 200);
+        }else{
+            return response()->json(['message' => 'Unauthorized.'], 401);
+        }
+    }
+
+    public function getStore($store_id){
+        if(auth()->user()){
+            $store = Store::find($store_id);
+            return response()->json(['message' => 'Store retreived successfully', 'data' => $store], 200);
         }else{
             return response()->json(['message' => 'Unauthorized.'], 401);
         }
