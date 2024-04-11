@@ -91,9 +91,10 @@ class StoreController extends Controller
     }
 
     public function getAllApprovedStores(){
-        if(auth()->user()){
-            $stores = Store::where('store_status', "approved")->get()->toArray();;
-            return response()->json(['message' => 'Approved stores retreived successfully', 'data' => $stores], 200);
+        if(auth()->user()||true){
+            $stores = Store::where('store_status', "approved")->get();
+            // return response()->json(['message' => 'Approved stores retreived successfully', 'data' => $stores], 200);
+            return view('home.stores')->with(['all_stores'=>$stores]);
         }else{
             return response()->json(['message' => 'Unauthorized.'], 401);
         }
