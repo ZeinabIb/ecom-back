@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\StoreController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +16,8 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::get('/', function () {return view('welcome');});
+Route::get('/', function () {return view('home.home');});
+Route::get('/stores', [StoreController::class, 'getAllApprovedStores']);
 
 Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirect']);
 
