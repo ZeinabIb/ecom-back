@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\AuthController;
-
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,12 +16,26 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::get('/', function () {return view('welcome');});
+// Route::get('/', function () {return view('welcome');});
 
-Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirect']);
+// Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirect']);
 
-Route::get('/auth/{provider}/callback', [AuthController::class, 'callback']);
+// Route::get('/auth/{provider}/callback', [AuthController::class, 'callback']);
 
-use App\Http\Controllers\BotManController;
-use BotMan\BotMan\Messages\Incoming\Answer;
-Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
+// use App\Http\Controllers\BotManController;
+// use BotMan\BotMan\Messages\Incoming\Answer;
+// Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
+
+Route::get('/', function () {
+    return view('home');
+})->name('home');
+
+Route::get('users', [UserController::class, 'index'])->name('users.index');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+require __DIR__.'/auth.php';
