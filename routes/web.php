@@ -37,3 +37,8 @@ Route::get('/order-address', function () {
 Route::get('/seller-order-address', function () {
     return view('seller-order-address');
 });
+
+Route::get('/chat','App\Http\Controllers\PusherController@index');
+
+Route::post('/broadcast','App\Http\Controllers\PusherController@broadcast');
+Route::post('/receive','App\Http\Controllers\PusherController@receive');
