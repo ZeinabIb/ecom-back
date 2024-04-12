@@ -33,3 +33,7 @@ Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
 Route::get('/order-address', function () {
     return view('order-address');
 });
+
+Route::get('/seller-order-address', function () {
+    return view('seller-order-address');
+});
