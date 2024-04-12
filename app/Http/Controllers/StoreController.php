@@ -203,7 +203,7 @@ class StoreController extends Controller
                     'product_description' => 'required|string',
                     'price' => 'required|numeric|between:0.00,999999.99',
                     'quantity' => 'required|int|min:0',
-                    'image_url' => 'nullable|string|max:255',
+                    'image'=>'required|mimes:png,jpg,jpeg|max:5048',
                     'auction_status' => 'required|integer|between:0,1', // Assuming auction_status is a binary value (0 or 1)
                     'store_id' => 'required|exists:stores,id', // Assuming store_id references the id column in the stores table
                     'category_id' => 'required|exists:categories,id', // Assuming category_id references the id column in the categories table
@@ -214,8 +214,20 @@ class StoreController extends Controller
                     return response()->json(['message' => 'How about you add products to your OWN store instead.'], 401);
                 }
 
+                $newImageName = time() .$store->id . '.' . $request->image->extension();
+                $request->image->move('products', $newImageName);
+
                 // Create the product
-                $product = Product::create($validatedData);
+                $product = Product::create([
+                    'name' => $request->input('name'),
+                    'product_description'=>$request->input('product_description'),
+                    'price'=>$request->input('price'),
+                    'quantity'=>$request->input('quantity'),
+                    'image_url'=>$newImageName,
+                    'auction_status'=>$request->input('auction_status'),
+                    'store_id'=>$request->input('store_id'),
+                    'category_id'=>$request->input('category_id'),                  
+                ]);
 
                 return response()->json(['message' => 'Succesfully added product.'], 200);
 
@@ -282,11 +294,12 @@ class StoreController extends Controller
     }
     
     public function getProducts($store_id){
-        if(auth()->user()){
+        if(auth()->user() || true){
             try {
                 $store = Store::find($store_id);
+                return view('home.store_view')->with(['all_products'=>$store->products, 'all_categories' => $store->categories]);
 
-                return response()->json(['message' => 'Succesfully retreived products for store named '. $store->name .'.', 'data' => $store->products], 200);
+                // return response()->json(['message' => 'Succesfully retreived products for store named '. $store->name .'.', 'data' => $store->products], 200);
             } catch (\Throwable $th) {
                 return response()->json(['message' =>  'There was an error while retreiving products for this store.', 'exception_message' => $th->getMessage()], 403);
             }

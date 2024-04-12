@@ -37,6 +37,7 @@
 </head>
 <body class="animsition">
     @include('home.header')
+    
     @include('home.footer')
     <!--===============================================================================================-->	
 	<script src="home/vendor/jquery/jquery-3.2.1.min.js"></script>

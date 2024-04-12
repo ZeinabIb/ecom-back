@@ -18,10 +18,12 @@ use App\Http\Controllers\StoreController;
 
 Route::get('/', function () {return view('home.home');});
 Route::get('/stores', [StoreController::class, 'getAllApprovedStores']);
+Route::get('/stores/{store_id}/', [StoreController::class, 'getProducts']);
 
 Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirect']);
 
 Route::get('/auth/{provider}/callback', [AuthController::class, 'callback']);
+
 
 use App\Http\Controllers\BotManController;
 use BotMan\BotMan\Messages\Incoming\Answer;
