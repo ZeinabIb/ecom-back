@@ -42,3 +42,13 @@ Route::get('/chat','App\Http\Controllers\PusherController@index');
 
 Route::post('/broadcast','App\Http\Controllers\PusherController@broadcast');
 Route::post('/receive','App\Http\Controllers\PusherController@receive');
+// Route::get('/user-list', 'PusherController@showUserList')->middleware('auth');
+// Route::get('/start-chat/{user}', 'PusherController@startChatWithUser')->middleware('auth');
+
+
+Route::get('/user-list', 'App\Http\Controllers\PusherController@showUserList');
+Route::get('/start-chat/{user}', 'App\Http\Controllers\PusherController@startChatWithUser');
+use App\Http\Controllers\UserController;
+
+Route::get('/users', [UserController::class, 'index']);
+Route::get('/chat/{user}', [UserController::class, 'startChat'])->name('startChat');
