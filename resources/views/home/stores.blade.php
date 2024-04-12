@@ -4,7 +4,7 @@
 	<title>Home</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->	
+<!--===============================================================================================-->
 	<link rel="icon" type="image/png" href="images/icons/favicon.png"/>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href={{ asset('home/vendor/bootstrap/css/bootstrap.min.css')}}>
@@ -16,13 +16,13 @@
 	<link rel="stylesheet" type="text/css" href={{ asset('home/fonts/linearicons-v1.0.0/icon-font.min.css')}}>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href={{ asset('home/vendor/animate/animate.css')}}>
-<!--===============================================================================================-->	
+<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href={{ asset('home/vendor/css-hamburgers/hamburgers.min.css')}}>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href={{ asset('home/vendor/animsition/css/animsition.min.css')}}>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href={{ asset('home/vendor/select2/select2.min.css')}}>
-<!--===============================================================================================-->	
+<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href={{ asset('home/vendor/daterangepicker/daterangepicker.css')}}>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href={{ asset('home/vendor/slick/slick.css')}}>
@@ -70,8 +70,8 @@
 
 			<div class="wrap-menu-desktop how-shadow1">
 				<nav class="limiter-menu-desktop container">
-					
-					<!-- Logo desktop -->		
+
+					<!-- Logo desktop -->
 					<a href="#" class="logo">
 						<img src="images/icons/logo-01.png" alt="IMG-LOGO">
 					</a>
@@ -108,7 +108,7 @@
 								<a href="contact.html">Contact</a>
 							</li>
 						</ul>
-					</div>	
+					</div>
 
 					<!-- Icon header -->
 					<div class="wrap-icon-header flex-w flex-r-m">
@@ -125,12 +125,12 @@
 						</a>
 					</div>
 				</nav>
-			</div>	
+			</div>
 		</div>
 
 		<!-- Header Mobile -->
 		<div class="wrap-header-mobile">
-			<!-- Logo moblie -->		
+			<!-- Logo moblie -->
 			<div class="logo-mobile">
 				<a href="index.html"><img src="images/icons/logo-01.png" alt="IMG-LOGO"></a>
 			</div>
@@ -255,7 +255,7 @@
 					<i class="zmdi zmdi-close"></i>
 				</div>
 			</div>
-			
+
 			<div class="header-cart-content flex-w js-pscroll">
 				<ul class="header-cart-wrapitem w-full">
 					<li class="header-cart-item flex-w flex-t m-b-12">
@@ -306,7 +306,7 @@
 						</div>
 					</li>
 				</ul>
-				
+
 				<div class="w-full">
 					<div class="header-cart-total w-full p-tb-40">
 						Total: $75.00
@@ -326,7 +326,7 @@
 		</div>
 	</div>
 
-	
+
 	<!-- Product -->
 	<div class="bg0 m-t-23 p-b-140">
 		<div class="container">
@@ -350,7 +350,7 @@
 						Search
 					</div>
 				</div>
-				
+
 				<!-- Search product -->
 				<div class="dis-none panel-search w-full p-t-10 p-b-15">
 					<div class="bor8 dis-flex p-l-15">
@@ -359,7 +359,7 @@
 						</button>
 
 						<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search-product" placeholder="Search">
-					</div>	
+					</div>
 				</div>
 
 				<!-- Filter -->
@@ -585,11 +585,11 @@
 			</div>
 		</div>
 	</div>
-				
+
 		</div>
 	</div>
     @include('home.footer')
-    <!--===============================================================================================-->	
+    <!--===============================================================================================-->
 	<script src="home/vendor/jquery/jquery-3.2.1.min.js"></script>
     <!--===============================================================================================-->
         <script src="home/vendor/animsition/js/animsition.min.js"></script>
@@ -639,37 +639,37 @@
             $('.js-addwish-b2').on('click', function(e){
                 e.preventDefault();
             });
-    
+
             $('.js-addwish-b2').each(function(){
                 var nameProduct = $(this).parent().parent().find('.js-name-b2').html();
                 $(this).on('click', function(){
                     swal(nameProduct, "is added to wishlist !", "success");
-    
+
                     $(this).addClass('js-addedwish-b2');
                     $(this).off('click');
                 });
             });
-    
+
             $('.js-addwish-detail').each(function(){
                 var nameProduct = $(this).parent().parent().parent().find('.js-name-detail').html();
-    
+
                 $(this).on('click', function(){
                     swal(nameProduct, "is added to wishlist !", "success");
-    
+
                     $(this).addClass('js-addedwish-detail');
                     $(this).off('click');
                 });
             });
-    
+
             /*---------------------------------------------*/
-    
+
             $('.js-addcart-detail').each(function(){
                 var nameProduct = $(this).parent().parent().parent().parent().find('.js-name-detail').html();
                 $(this).on('click', function(){
                     swal(nameProduct, "is added to cart !", "success");
                 });
             });
-        
+
         </script>
     <!--===============================================================================================-->
         <script src="home/vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
@@ -682,7 +682,7 @@
                     scrollingThreshold: 1000,
                     wheelPropagation: false,
                 });
-    
+
                 $(window).on('resize', function(){
                     ps.update();
                 })
@@ -690,5 +690,7 @@
         </script>
     <!--===============================================================================================-->
         <script src="home/js/main.js"></script>
+
+
 </body>
 </html>

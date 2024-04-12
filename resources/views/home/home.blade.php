@@ -4,7 +4,7 @@
 	<title>Home</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-<!--===============================================================================================-->	
+<!--===============================================================================================-->
 	<link rel="icon" type="image/png" href="images/icons/favicon.png"/>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href={{ asset('home/vendor/bootstrap/css/bootstrap.min.css')}}>
@@ -16,13 +16,13 @@
 	<link rel="stylesheet" type="text/css" href={{ asset('home/fonts/linearicons-v1.0.0/icon-font.min.css')}}>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href={{ asset('home/vendor/animate/animate.css')}}>
-<!--===============================================================================================-->	
+<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href={{ asset('home/vendor/css-hamburgers/hamburgers.min.css')}}>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href={{ asset('home/vendor/animsition/css/animsition.min.css')}}>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href={{ asset('home/vendor/select2/select2.min.css')}}>
-<!--===============================================================================================-->	
+<!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href={{ asset('home/vendor/daterangepicker/daterangepicker.css')}}>
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href={{ asset('home/vendor/slick/slick.css')}}>
@@ -37,9 +37,9 @@
 </head>
 <body class="animsition">
     @include('home.header')
-    
+
     @include('home.footer')
-    <!--===============================================================================================-->	
+    <!--===============================================================================================-->
 	<script src="home/vendor/jquery/jquery-3.2.1.min.js"></script>
     <!--===============================================================================================-->
         <script src="home/vendor/animsition/js/animsition.min.js"></script>
@@ -89,37 +89,37 @@
             $('.js-addwish-b2').on('click', function(e){
                 e.preventDefault();
             });
-    
+
             $('.js-addwish-b2').each(function(){
                 var nameProduct = $(this).parent().parent().find('.js-name-b2').html();
                 $(this).on('click', function(){
                     swal(nameProduct, "is added to wishlist !", "success");
-    
+
                     $(this).addClass('js-addedwish-b2');
                     $(this).off('click');
                 });
             });
-    
+
             $('.js-addwish-detail').each(function(){
                 var nameProduct = $(this).parent().parent().parent().find('.js-name-detail').html();
-    
+
                 $(this).on('click', function(){
                     swal(nameProduct, "is added to wishlist !", "success");
-    
+
                     $(this).addClass('js-addedwish-detail');
                     $(this).off('click');
                 });
             });
-    
+
             /*---------------------------------------------*/
-    
+
             $('.js-addcart-detail').each(function(){
                 var nameProduct = $(this).parent().parent().parent().parent().find('.js-name-detail').html();
                 $(this).on('click', function(){
                     swal(nameProduct, "is added to cart !", "success");
                 });
             });
-        
+
         </script>
     <!--===============================================================================================-->
         <script src="home/vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
@@ -132,7 +132,7 @@
                     scrollingThreshold: 1000,
                     wheelPropagation: false,
                 });
-    
+
                 $(window).on('resize', function(){
                     ps.update();
                 })
@@ -141,4 +141,15 @@
     <!--===============================================================================================-->
         <script src="home/js/main.js"></script>
 </body>
+
+
+    <script>
+     var botmanWidget = {
+         aboutText: 'ssdsd',
+         introMessage: "✋ Hi! I'm form ItSolutionStuff.com"
+     };
+    </script>
+
+    <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
+
 </html>
