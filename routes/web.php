@@ -29,3 +29,7 @@ use App\Http\Controllers\BotManController;
 use BotMan\BotMan\Messages\Incoming\Answer;
 Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
 // Route::match(['get', 'post'], '/botman', 'BotManController@handle');
+
+Route::get('/order-address', function () {
+    return view('order-address');
+});
