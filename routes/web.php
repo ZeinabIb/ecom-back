@@ -71,3 +71,13 @@ Route::put('/admin/store/{store}', [AdminController::class, 'updateStore'])->nam
 
 Route::get('/sellers/{seller}', [SellerController::class, 'show'])->name('sellers.show');
 
+
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+});
