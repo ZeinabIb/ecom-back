@@ -67,6 +67,24 @@
             </tbody>
         </table>
     </div>
+
+    <div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Users
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    @forelse($users as $user)
+                        <li class="list-group-item">{{ $user->username }} - {{ $user->email }}</li>
+                    @empty
+                        <li class="list-group-item">No users found.</li>
+                    @endforelse
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
 
 
