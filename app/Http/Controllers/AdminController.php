@@ -9,17 +9,43 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $stores = Store::all(); // Retrieve all stores from the database
-        return view('admin', ['stores' => $stores]); // Pass the stores data to the admin view
+        $stores = Store::all();
+        return view('admin', ['stores' => $stores]);
     }
 
     public function toggleStoreStatus(Request $request, Store $store)
     {
-        // Toggle the store status
+
         $store->store_status = $store->store_status === 'Active' ? 'Inactive' : 'Active';
         $store->save();
 
-        // Redirect back to the admin page
+
         return redirect()->route('admin.index');
     }
+
+    public function editStore(Store $store)
+    {
+        return view('edit_store', ['store' => $store]);
+    }
+
+
+
+public function updateStore(Request $request, Store $store)
+{
+    $request->validate([
+        'name' => 'required|string',
+        'details' => 'required|string',
+        'store_status' => 'required|in:Active,Inactive',
+    ]);
+
+    $store->update([
+        'name' => $request->name,
+        'details' => $request->details,
+        'store_status' => $request->store_status,
+    ]);
+
+    return redirect()->route('admin.index')->with('success', 'Store updated successfully');
+}
+
+
 }

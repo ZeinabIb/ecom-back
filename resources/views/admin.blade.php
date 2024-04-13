@@ -2,8 +2,18 @@
 <html>
 <head>
     <title>Admin Dashboard</title>
-    <!-- Include Bootstrap CSS -->
+
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+
+        .clickable-row {
+            cursor: pointer;
+        }
+
+        .clickable-row:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
 </head>
 <body>
 
@@ -23,12 +33,12 @@
                     <th>Details</th>
                     <th>Status</th>
                     <th>Action</th>
-                    <!-- Add more columns as needed -->
+
                 </tr>
             </thead>
             <tbody>
                 @foreach ($stores as $store)
-                <tr>
+                <tr class="clickable-row" data-id="{{ $store->id }}">
                     <td>{{ $store->id }}</td>
                     <td>{{ $store->name }}</td>
                     <td>{{ $store->details }}</td>
@@ -59,8 +69,18 @@
     </div>
 </div>
 
-<!-- Include Bootstrap JS (Optional, if you need Bootstrap JavaScript features) -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+
+    $(document).ready(function() {
+        $(".clickable-row").click(function() {
+            var storeId = $(this).data("id");
+
+            window.location = "/admin/store/" + storeId + "/edit";
+        });
+    });
+</script>
 
 </body>
 </html>
