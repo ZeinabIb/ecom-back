@@ -52,3 +52,14 @@ use App\Http\Controllers\UserController;
 
 Route::get('/users', [UserController::class, 'index']);
 Route::get('/chat/{user}', [UserController::class, 'startChat'])->name('startChat');
+
+
+
+use App\Http\Controllers\AdminController;
+
+// Route::get('/admin', [AdminController::class, 'index']);
+Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+
+
+Route::put('/admin/stores/{store}', [AdminController::class, 'toggleStoreStatus'])->name('admin.toggleStoreStatus');
+ 
