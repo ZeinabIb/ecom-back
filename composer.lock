@@ -4,8 +4,211 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "865adf79d1a6915bf3a58438ba65e789",
+    "content-hash": "23246d9dbb482a95e990ab25f9bf5c2a",
     "packages": [
+        {
+            "name": "amrshawky/currency",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amrshawky/currency.git",
+                "reference": "39f13b6783ef611fd13916d48abd31bca2ab1e54"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amrshawky/currency/zipball/39f13b6783ef611fd13916d48abd31bca2ab1e54",
+                "reference": "39f13b6783ef611fd13916d48abd31bca2ab1e54",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": ">=6.0",
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AmrShawky\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Amr Shawky",
+                    "homepage": "https://amrshawky.com"
+                }
+            ],
+            "description": "A PHP library for current and historical currency exchange rates & crypto exchange rates based on the free API provided by exchangerate.host",
+            "keywords": [
+                "crypto exchange rates",
+                "currency",
+                "currency converter",
+                "exchange rates",
+                "php"
+            ],
+            "support": {
+                "issues": "https://github.com/amrshawky/currency/issues",
+                "source": "https://github.com/amrshawky/currency/tree/1.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://ko-fi.com/amrshawky",
+                    "type": "ko_fi"
+                }
+            ],
+            "abandoned": true,
+            "time": "2021-05-13T23:41:33+00:00"
+        },
+        {
+            "name": "amrshawky/laravel-currency",
+            "version": "6.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amrshawky/laravel-currency.git",
+                "reference": "a6ab6c4f65b58b4a89e2f467e91cc139e59c4df7"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amrshawky/laravel-currency/zipball/a6ab6c4f65b58b4a89e2f467e91cc139e59c4df7",
+                "reference": "a6ab6c4f65b58b4a89e2f467e91cc139e59c4df7",
+                "shasum": ""
+            },
+            "require": {
+                "amrshawky/currency": "^1.0",
+                "ext-json": "*",
+                "guzzlehttp/guzzle": ">=6.0",
+                "illuminate/support": "^6.0|^7.0|^8.0|^9.0|^10.0",
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=8.5.23"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AmrShawky\\LaravelCurrency\\CurrencyServiceProvider"
+                    ],
+                    "aliases": {
+                        "Currency": "AmrShawky\\LaravelCurrency\\Facade\\Currency"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AmrShawky\\LaravelCurrency\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Amr Shawky",
+                    "homepage": "https://amrshawky.com"
+                }
+            ],
+            "description": "A Laravel package for current and historical currency exchange rates & crypto exchange rates based on the free API provided by exchangerate.host",
+            "keywords": [
+                "currency",
+                "currency converter",
+                "exchange rates",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/amrshawky/laravel-currency/issues",
+                "source": "https://github.com/amrshawky/laravel-currency/tree/6.0.0"
+            },
+            "funding": [
+                {
+                    "url": "https://ko-fi.com/amrshawky",
+                    "type": "ko_fi"
+                }
+            ],
+            "abandoned": true,
+            "time": "2023-02-17T18:40:31+00:00"
+        },
+        {
+            "name": "ashallendesign/laravel-exchange-rates",
+            "version": "v7.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ash-jc-allen/laravel-exchange-rates.git",
+                "reference": "460f16c070c4949668efe39269b888a6ff550249"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ash-jc-allen/laravel-exchange-rates/zipball/460f16c070c4949668efe39269b888a6ff550249",
+                "reference": "460f16c070c4949668efe39269b888a6ff550249",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "guzzlehttp/guzzle": "^7.0",
+                "illuminate/cache": "^8.0|^9.0|^10.0|^11.0",
+                "illuminate/container": "^8.0|^9.0|^10.0|^11.0",
+                "nesbot/carbon": "^2.0|^3.0",
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.0",
+                "nunomaduro/larastan": "^1.0|^2.0",
+                "orchestra/testbench": "^6.0|^7.0|^8.0|^9.0",
+                "phpunit/phpunit": "^9.0|^10.5"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "AshAllenDesign\\LaravelExchangeRates\\Providers\\ExchangeRatesProvider"
+                    ],
+                    "aliases": {
+                        "ExchangeRate": "AshAllenDesign\\LaravelExchangeRates\\Facades\\ExchangeRate"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AshAllenDesign\\LaravelExchangeRates\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ash Allen",
+                    "email": "mail@ashallendesign.co.uk"
+                }
+            ],
+            "description": "A wrapper package for interacting with the exchangeratesapi.io API.",
+            "homepage": "https://github.com/ash-jc-allen/laravel-exchange-rates",
+            "keywords": [
+                "ashallendesign",
+                "exchange-rate",
+                "exchangeratesapi.io",
+                "laravel-exchange-rates"
+            ],
+            "support": {
+                "issues": "https://github.com/ash-jc-allen/laravel-exchange-rates/issues",
+                "source": "https://github.com/ash-jc-allen/laravel-exchange-rates/tree/v7.4.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/ash-jc-allen",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-03-19T11:13:24+00:00"
+        },
         {
             "name": "botman/botman",
             "version": "v2.8.3",
