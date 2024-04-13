@@ -5,7 +5,6 @@
 
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
-
         .clickable-row {
             cursor: pointer;
         }
@@ -33,7 +32,6 @@
                     <th>Details</th>
                     <th>Status</th>
                     <th>Action</th>
-
                 </tr>
             </thead>
             <tbody>
@@ -69,32 +67,56 @@
     </div>
 
     <div class="row mt-4">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header">
-                Users
-            </div>
-            <div class="card-body">
-                <ul class="list-group">
-                    @forelse($users as $user)
-                        <li class="list-group-item">{{ $user->username }} - {{ $user->email }}</li>
-                    @empty
-                        <li class="list-group-item">No users found.</li>
-                    @endforelse
-                </ul>
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    Users
+                </div>
+                <div class="card-body">
+                    @if (session('password_reset_success'))
+                        <div class="alert alert-success">{{ session('password_reset_success') }}</div>
+                    @endif
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Reset Password</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($users as $user)
+                            <tr>
+                                <td>{{ $user->id }}</td>
+                                <td>{{ $user->username }}</td>
+                                <td>{{ $user->email }}</td>
+                                <td>
+                                    <form action="{{ route('admin.resetUserPassword', $user->id) }}" method="POST">
+                                        @csrf
+                                        <div class="input-group">
+                                            <input type="password" name="password" class="form-control" placeholder="New Password" required>
+                                            <div class="input-group-append">
+                                                <button type="submit" class="btn btn-outline-primary">Reset Password</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-
     $(document).ready(function() {
         $(".clickable-row").click(function() {
             var storeId = $(this).data("id");
-
             window.location = "/admin/store/" + storeId + "/edit";
         });
     });

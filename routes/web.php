@@ -73,4 +73,5 @@ Route::get('/sellers/{seller}', [SellerController::class, 'show'])->name('seller
 
 Route::post('/sellers/{seller}/reset-password', [SellerController::class, 'resetPassword'])->name('sellers.resetPassword');
 
+Route::post('/admin/users/{user}/reset-password', [AdminController::class, 'resetUserPassword'])->name('admin.resetUserPassword');
 
