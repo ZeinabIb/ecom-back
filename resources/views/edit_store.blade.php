@@ -42,6 +42,8 @@
                         <input type="hidden" name="seller_id" value="{{ $store->seller_id }}">
 
                     </form>
+
+
                 </div>
             </div>
         </div>
@@ -52,26 +54,49 @@
                     Seller Information
                 </div>
                 <div class="card-body">
-                <form>
-                @if ($seller)
-                    <div class="form-group">
-                        <label for="username">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" value="{{ $seller->username }}" disabled>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ $seller->email }}" disabled>
-                    </div>
-                    <div class="form-group">
-                        <label for="phone">Phone</label>
-                        <input type="text" class="form-control" id="phone" name="phone" value="{{ $seller->phone }}" disabled>
-                    </div>
-                @else
-                    <p>No seller information found.</p>
-                @endif
-
+        @if ($seller)
+            <form>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" name="username" value="{{ $seller->username }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" value="{{ $seller->email }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="text" class="form-control" id="phone" name="phone" value="{{ $seller->phone }}" disabled>
+                </div>
             </form>
-        </div>
+            <!-- Password reset form -->
+            <a href="#" id="resetPasswordLink" class="text-danger">Reset Password</a>
+            <form id="resetPasswordForm" style="display: none;" action="{{ route('sellers.resetPassword', $seller->id) }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <label for="old_password">Old Password</label>
+                    <input type="password" class="form-control" id="old_password" name="old_password">
+                </div>
+                <div class="form-group">
+                    <label for="password">New Password</label>
+                    <input type="password" class="form-control" id="password" name="password">
+                </div>
+                <button type="submit" class="btn btn-primary">Update Password</button>
+            </form>
+            <div id="passwordUpdateMessage" style="display: none;"></div>
+        @else
+            <p>No seller information found.</p>
+        @endif
+        @if (session('success'))
+                        <div class="alert alert-success mt-3">
+                            {{ session('success') }}
+                        </div>
+                    @elseif (session('error'))
+                        <div class="alert alert-danger mt-3">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+    </div>
 
             </div>
         </div>
@@ -80,5 +105,11 @@
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+<script>
+    document.getElementById('resetPasswordLink').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.getElementById('resetPasswordForm').style.display = 'block';
+    });
+</script>
 </body>
 </html>

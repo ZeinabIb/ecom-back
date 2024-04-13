@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Store;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class SellerController extends Controller
 {
@@ -37,6 +39,26 @@ class SellerController extends Controller
             abort(404, 'The store or seller you are trying to edit does not exist.');
         }
     }
+    public function resetPassword(Request $request, User $seller)
+    {
+        // Validate the request
+        $request->validate([
+            'old_password' => 'required',
+            'password' => 'required|min:6',
+        ]);
+
+        // Check if the old password matches the one in the database
+        if (Hash::check($request->old_password, $seller->password)) {
+            // Update the password
+            $seller->password = Hash::make($request->password);
+            $seller->save();
+
+            return redirect()->back()->with('success', 'Password updated successfully.');
+        } else {
+            return redirect()->back()->with('error', 'Old password does not match.');
+        }
+    }
+
 
 
 }

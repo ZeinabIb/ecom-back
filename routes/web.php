@@ -71,3 +71,6 @@ Route::put('/admin/store/{store}', [AdminController::class, 'updateStore'])->nam
 
 Route::get('/sellers/{seller}', [SellerController::class, 'show'])->name('sellers.show');
 
+Route::post('/sellers/{seller}/reset-password', [SellerController::class, 'resetPassword'])->name('sellers.resetPassword');
+
+
