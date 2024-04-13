@@ -28,4 +28,10 @@ class Store extends Model
     {
         return $this->hasManyThrough(Auction::class, Product::class);
     }
+
+    public function seller()
+    {
+        return $this->belongsTo(User::class, 'seller_id');
+    }
+
 }

@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Edit Store</title>
-
+    <!-- Include Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
@@ -52,19 +52,31 @@
                     Seller Information
                 </div>
                 <div class="card-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="seller_id">Seller ID</label>
-                            <input type="text" class="form-control" id="seller_id" name="seller_id" value="{{ $store->seller_id }}" disabled>
-                        </div>
+                <form>
+                @if ($seller)
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" value="{{ $seller->username }}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ $seller->email }}" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="text" class="form-control" id="phone" name="phone" value="{{ $seller->phone }}" disabled>
+                    </div>
+                @else
+                    <p>No seller information found.</p>
+                @endif
 
-                    </form>
-                </div>
+            </form>
+        </div>
+
             </div>
         </div>
     </div>
 </div>
-
 
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 

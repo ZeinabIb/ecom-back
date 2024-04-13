@@ -62,10 +62,12 @@ Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 
 
 Route::put('/admin/stores/{store}', [AdminController::class, 'toggleStoreStatus'])->name('admin.toggleStoreStatus');
+use App\Http\Controllers\SellerController;
 
+Route::get('/admin/store/{store}/edit', [SellerController::class, 'editStore'])->name('admin.editStore');
 
-
-Route::get('/admin/store/{store}/edit', [AdminController::class, 'editStore'])->name('admin.editStore');
 
 Route::put('/admin/store/{store}', [AdminController::class, 'updateStore'])->name('admin.updateStore');
+
+Route::get('/sellers/{seller}', [SellerController::class, 'show'])->name('sellers.show');
 
