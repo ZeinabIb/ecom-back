@@ -82,6 +82,7 @@
                                 <th>ID</th>
                                 <th>Username</th>
                                 <th>Email</th>
+                                <th>User Type</th>
                                 <th>Reset Password</th>
                             </tr>
                         </thead>
@@ -91,6 +92,7 @@
                                 <td>{{ $user->id }}</td>
                                 <td>{{ $user->username }}</td>
                                 <td>{{ $user->email }}</td>
+                                <td>{{ $user->user_type }}</td>
                                 <td>
                                     <form action="{{ route('admin.resetUserPassword', $user->id) }}" method="POST">
                                         @csrf
