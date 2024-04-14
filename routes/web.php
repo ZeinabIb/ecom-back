@@ -26,8 +26,6 @@ Route::get('/auth/{provider}/callback', [AuthController::class, 'callback']);
 use App\Http\Controllers\BotManController;
 use BotMan\BotMan\Messages\Incoming\Answer;
 Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
-<<<<<<< Updated upstream
-=======
 // Route::match(['get', 'post'], '/botman', 'BotManController@handle');
 
 Route::get('/order-address', function () {
@@ -84,4 +82,3 @@ Route::middleware([
         return view('home.home');
     })->name('home.home');
 });
->>>>>>> Stashed changes
