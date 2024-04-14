@@ -17,9 +17,45 @@ class SellerController extends Controller
         return view('sellers.index', ['sellers' => $sellers]);
     }
 
-    public function show(User $seller)
+    public function show($sellerId)
     {
-        return view('sellers.seller', ['seller' => $seller]);
+        $seller = User::findOrFail($sellerId);
+        $stores = Store::All()
+        ->where("seller_id", auth()->user()->id);
+        return view('sellers.seller', ['seller' => $seller, 'stores' => $stores]);
+    }
+
+    public function showAddStoreForm() {
+        return view('sellers.addStore', ['seller' => auth()->user()]);
+    }
+
+    public function showEditStoreForm($sellerId, $storeId) {
+        $store = Store::findOrFail($storeId);
+
+
+        $seller = $store->seller()->first();
+        return view('sellers.edit_store', ['store' => $store, 'seller' => $seller]);
+    }
+
+    public function updateStore(Request $request, $sellerId, $storeId)
+    {
+        // Retrieve the store
+        $store = Store::findOrFail($storeId);
+
+        // Validate the incoming request data
+        $request->validate([
+            'name' => 'required|string',
+            'description' => 'required|string',
+        ]);
+
+        // Update the store details
+        $store->update([
+            'name' => $request->input('name'),
+            'details' => $request->input('description'),
+        ]);
+
+        // Redirect back to the edit store page with a success message
+        return redirect()->route('sellers.show', ['seller' => auth()->user()->id])->with('success', 'Store updated successfully!');
     }
 
     public function editStore(Request $request, $storeId)

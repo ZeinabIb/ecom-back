@@ -20,7 +20,7 @@ class StoreController extends Controller
     public function addStore(Request $request){
 
         // checking if user is of type "seller"
-        if(auth()->user()->user_type=="seller"){
+        if(auth()->user()->usertype=="seller"){
 
             $request->validate([
                 'name'=>'required|string',
@@ -42,18 +42,21 @@ class StoreController extends Controller
             Mail::to(auth()->user()->email)->send(new StoreAwaitingReviewNotification);
 
             } catch (\Throwable $th) {
-                return response()->json(['message' =>  'There was an error adding your store.', 'exception_message' => $th->getMessage()], 402);
+                // return response()->json(['message' =>  'There was an error adding your store.', 'exception_message' => $th->getMessage()], 402);
+                redirect()->back();
             }
 
-            return response()->json(['message' => 'Store created successfully!'], 200);
+            // return response()->json(['message' => 'Store created successfully!'], 200);
+            return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
         }else{
-            return response()->json(['message' => 'Unauthorized'], 401);
+            // return response()->json(['message' => 'Unauthorized'], 401);
+            redirect('/login');
         }
 
     }
 
     public function reviewStore(Request $request){
-        if(auth()->user()->user_type=="admin"){
+        if(auth()->user()->usertype=="admin"){
             $request->validate([
                 'store_id'=>'required|int',
                 'review_status'=>'required|string', // "approved" / "rejected"
@@ -82,7 +85,7 @@ class StoreController extends Controller
     }
 
     public function getAllStores(){
-        if(auth()->user()->user_type=="admin"){
+        if(auth()->user()->usertype=="admin"){
             $stores = Store::All();
             return response()->json(['message' => 'Stores retreived successfully', 'data' => $stores], 200);
         }else{
@@ -91,7 +94,7 @@ class StoreController extends Controller
     }
 
     public function getAllApprovedStores(){
-        if(auth()->user()||true){
+        if(auth()->user()){
             $stores = Store::where('store_status', "approved")->get();
             // return response()->json(['message' => 'Approved stores retreived successfully', 'data' => $stores], 200);
             return view('home.stores')->with(['all_stores'=>$stores]);
@@ -110,7 +113,7 @@ class StoreController extends Controller
     }
 
     public function getAllStoresForSeller(){
-        if(auth()->user()->user_type=="seller"){
+        if(auth()->user()->usertype=="seller"){
             $stores = Store::All()
             ->where("seller_id", auth()->user()->id);
 
@@ -125,7 +128,7 @@ class StoreController extends Controller
     // CATEGORY - START //
 
     public function addCategory(Request $request){
-        if(auth()->user()->user_type=="seller"){
+        if(auth()->user()->usertype=="seller"){
             $request->validate([
                 'store_id'=>'required|int',
                 'newCategory'=>'required|string'
@@ -167,7 +170,7 @@ class StoreController extends Controller
     }
 
     public function deleteCategory(Request $request){
-        if(auth()->user()->user_type=="seller"){
+        if(auth()->user()->usertype=="seller"){
             try {
                 $request->validate([
                     'category_id'=>'required|int'
@@ -196,14 +199,14 @@ class StoreController extends Controller
     // PRODUCT - START //
 
     public function addProduct(Request $request){
-        if(auth()->user()->user_type=="seller"){
+        if(auth()->user()->usertype=="seller"){
             try {
                 $validatedData = $request->validate([
                     'name' => 'required|string|max:255',
                     'product_description' => 'required|string',
                     'price' => 'required|numeric|between:0.00,999999.99',
                     'quantity' => 'required|int|min:0',
-                    'image'=>'required|mimes:png,jpg,jpeg|max:5048',
+                    'image_url' => 'nullable|string|max:255',
                     'auction_status' => 'required|integer|between:0,1', // Assuming auction_status is a binary value (0 or 1)
                     'store_id' => 'required|exists:stores,id', // Assuming store_id references the id column in the stores table
                     'category_id' => 'required|exists:categories,id', // Assuming category_id references the id column in the categories table
@@ -214,20 +217,8 @@ class StoreController extends Controller
                     return response()->json(['message' => 'How about you add products to your OWN store instead.'], 401);
                 }
 
-                $newImageName = time() .$store->id . '.' . $request->image->extension();
-                $request->image->move('products', $newImageName);
-
                 // Create the product
-                $product = Product::create([
-                    'name' => $request->input('name'),
-                    'product_description'=>$request->input('product_description'),
-                    'price'=>$request->input('price'),
-                    'quantity'=>$request->input('quantity'),
-                    'image_url'=>$newImageName,
-                    'auction_status'=>$request->input('auction_status'),
-                    'store_id'=>$request->input('store_id'),
-                    'category_id'=>$request->input('category_id'),                  
-                ]);
+                $product = Product::create($validatedData);
 
                 return response()->json(['message' => 'Succesfully added product.'], 200);
 
@@ -240,7 +231,7 @@ class StoreController extends Controller
     }
     
     public function editProduct(Request $request, $productId){
-        if(auth()->user()->user_type=="seller"){
+        if(auth()->user()->usertype=="seller"){
                 try {
                     $product = Product::findOrFail($productId);
 
@@ -272,7 +263,7 @@ class StoreController extends Controller
     }
     
     public function deleteProduct($productId){
-        if(auth()->user()->user_type=="seller"){
+        if(auth()->user()->usertype=="seller"){
             try {
                 $product = Product::findOrFail($productId);
                 // Check if the product belongs to the authenticated user's store
@@ -294,12 +285,11 @@ class StoreController extends Controller
     }
     
     public function getProducts($store_id){
-        if(auth()->user() || true){
+        if(auth()->user()){
             try {
                 $store = Store::find($store_id);
-                return view('home.store_view')->with(['all_products'=>$store->products, 'all_categories' => $store->categories]);
 
-                // return response()->json(['message' => 'Succesfully retreived products for store named '. $store->name .'.', 'data' => $store->products], 200);
+                return response()->json(['message' => 'Succesfully retreived products for store named '. $store->name .'.', 'data' => $store->products], 200);
             } catch (\Throwable $th) {
                 return response()->json(['message' =>  'There was an error while retreiving products for this store.', 'exception_message' => $th->getMessage()], 403);
             }

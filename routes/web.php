@@ -16,20 +16,18 @@ use App\Http\Controllers\StoreController;
 |
 */
 
-Route::get('/', function () {
-    return view('home.home');
-})->name('main-home');
-
+Route::get('/', function () {return view('home.home');});
 Route::get('/stores', [StoreController::class, 'getAllApprovedStores']);
-Route::get('/stores/{store_id}/', [StoreController::class, 'getProducts']);
 
 Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirect']);
-Route::get('/auth/{provider}/callback', [AuthController::class, 'callback']);
 
+Route::get('/auth/{provider}/callback', [AuthController::class, 'callback']);
 
 use App\Http\Controllers\BotManController;
 use BotMan\BotMan\Messages\Incoming\Answer;
 Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
+<<<<<<< Updated upstream
+=======
 // Route::match(['get', 'post'], '/botman', 'BotManController@handle');
 
 Route::get('/order-address', function () {
@@ -72,7 +70,10 @@ Route::get('/admin/store/{store}/edit', [SellerController::class, 'editStore'])-
 Route::put('/admin/store/{store}', [AdminController::class, 'updateStore'])->name('admin.updateStore');
 
 Route::get('/sellers/{seller}', [SellerController::class, 'show'])->name('sellers.show');
-
+Route::get('/sellers/{seller}/createStore', [SellerController::class, 'showAddStoreForm'])->name('sellers.createStore');
+Route::post('/sellers/{seller}/createStore', [StoreController::class, 'addStore'])->name('sellers.submitCreateStore');
+Route::get('/sellers/{seller}/editStore/{store}', [SellerController::class, 'showEditStoreForm'])->name('sellers.editStore');
+Route::put('/sellers/{seller}/editStore/{store}', [SellerController::class, 'updateStore'])->name('sellers.submitEditStore');
 
 Route::middleware([
     'auth:sanctum',
@@ -83,3 +84,4 @@ Route::middleware([
         return view('home.home');
     })->name('home.home');
 });
+>>>>>>> Stashed changes
