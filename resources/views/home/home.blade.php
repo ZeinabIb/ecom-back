@@ -36,9 +36,16 @@
 <!--===============================================================================================-->
 </head>
 <body class="animsition">
-    @include('home.header')
+@extends('home.header')
 
-    @include('home.footer')
+@section('content')
+
+    @section('footer')
+        @include('home.footer')
+    @endsection
+@endsection
+
+
     <!--===============================================================================================-->
 	<script src="home/vendor/jquery/jquery-3.2.1.min.js"></script>
     <!--===============================================================================================-->

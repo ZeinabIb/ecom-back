@@ -16,12 +16,14 @@ use App\Http\Controllers\StoreController;
 |
 */
 
-Route::get('/', function () {return view('home.home');});
+Route::get('/', function () {
+    return view('home.home');
+})->name('main-home');
+
 Route::get('/stores', [StoreController::class, 'getAllApprovedStores']);
 Route::get('/stores/{store_id}/', [StoreController::class, 'getProducts']);
 
 Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirect']);
-
 Route::get('/auth/{provider}/callback', [AuthController::class, 'callback']);
 
 
