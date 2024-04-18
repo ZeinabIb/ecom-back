@@ -16,8 +16,9 @@ use App\Http\Controllers\StoreController;
 |
 */
 
-Route::get('/', function () {return view('home.home');});
+Route::get('/', function () {return view('home.home');})->middleware('auth');
 Route::get('/stores', [StoreController::class, 'getAllApprovedStores']);
+Route::get('/stores/{store_id}/', [StoreController::class, 'getProducts']);
 
 Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirect']);
 
@@ -61,17 +62,27 @@ Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 
 Route::put('/admin/stores/{store}', [AdminController::class, 'toggleStoreStatus'])->name('admin.toggleStoreStatus');
 use App\Http\Controllers\SellerController;
+use App\Models\Store;
 
 Route::get('/admin/store/{store}/edit', [SellerController::class, 'editStore'])->name('admin.editStore');
 
 
 Route::put('/admin/store/{store}', [AdminController::class, 'updateStore'])->name('admin.updateStore');
 
-Route::get('/sellers/{seller}', [SellerController::class, 'show'])->name('sellers.show');
-Route::get('/sellers/{seller}/createStore', [SellerController::class, 'showAddStoreForm'])->name('sellers.createStore');
-Route::post('/sellers/{seller}/createStore', [StoreController::class, 'addStore'])->name('sellers.submitCreateStore');
-Route::get('/sellers/{seller}/editStore/{store}', [SellerController::class, 'showEditStoreForm'])->name('sellers.editStore');
-Route::put('/sellers/{seller}/editStore/{store}', [SellerController::class, 'updateStore'])->name('sellers.submitEditStore');
+Route::get('/sellers/{seller}', [SellerController::class, 'show'])->name('sellers.show')->middleware('checkSeller');
+Route::get('/sellers/{seller}/createStore', [SellerController::class, 'showAddStoreForm'])->name('sellers.createStore')->middleware('checkSeller');
+Route::post('/sellers/{seller}/createStore', [StoreController::class, 'addStore'])->name('sellers.submitCreateStore')->middleware('checkSeller');
+Route::get('/sellers/{seller}/editStore/{store}', [SellerController::class, 'showEditStoreForm'])->name('sellers.editStore')->middleware('checkSeller');
+Route::put('/sellers/{seller}/editStore/{store}', [SellerController::class, 'updateStore'])->name('sellers.submitEditStore')->middleware('checkSeller');
+Route::get('/sellers/{seller}/editStore/{store}/createCategory', [SellerController::class, 'showAddCategoryForm'])->name('sellers.createCategory')->middleware('checkSeller');
+Route::post('/sellers/{seller}/editStore/{store}/createCategory', [StoreController::class, 'addCategory'])->name('sellers.submitCreateCategory')->middleware('checkSeller');
+Route::get('/sellers/{seller}/editStore/{store}/deleteCategory/{category}', [StoreController::class, 'deleteCategory'])->name('sellers.deleteCategory')->middleware('checkSeller');
+Route::get('/sellers/{seller}/editStore/{store}/createProdcut', [SellerController::class, 'showAddProductForm'])->name('sellers.createProduct')->middleware('checkSeller');
+Route::post('/sellers/{seller}/editStore/{store}/createProduct', [StoreController::class, 'addProduct'])->name('sellers.submitCreateProduct')->middleware('checkSeller');
+Route::get('/sellers/{seller}/editStore/{store}/deleteProduct/{product}', [StoreController::class, 'deleteProduct'])->name('sellers.deleteProduct')->middleware('checkSeller');
+Route::get('/sellers/{seller}/editStore/{store}/editproduct/{product}', [SellerController::class, 'showEditProductForm'])->name('sellers.editProduct')->middleware('checkSeller');
+Route::put('/sellers/{seller}/editStore/{store}/editproduct/{product}', [StoreController::class, 'editProduct'])->name('sellers.submitEditProduct')->middleware('checkSeller');
+Route::delete('/sellers/{seller}/editStore/{store}/deleteAuction/{auction}', [StoreController::class, 'deleteAuction'])->name('sellers.deleteAuction')->middleware('checkSeller');
 
 Route::middleware([
     'auth:sanctum',

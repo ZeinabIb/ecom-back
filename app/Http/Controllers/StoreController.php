@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\StoreAwaitingReviewNotification;
 use App\Mail\StoreReviewEmail;
+use App\Models\Auction;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
@@ -59,7 +60,7 @@ class StoreController extends Controller
         if(auth()->user()->usertype=="admin"){
             $request->validate([
                 'store_id'=>'required|int',
-                'review_status'=>'required|string', // "approved" / "rejected"
+                'review_status'=>'required|string', // "Active" / "Inactive"
             ]);
 
             $updated = DB::table('stores')
@@ -94,13 +95,13 @@ class StoreController extends Controller
     }
 
     public function getAllApprovedStores(){
-        if(auth()->user()){
-            $stores = Store::where('store_status', "approved")->get();
+        // if(auth()->user()){
+            $stores = Store::where('store_status', "Active")->get();
             // return response()->json(['message' => 'Approved stores retreived successfully', 'data' => $stores], 200);
             return view('home.stores')->with(['all_stores'=>$stores]);
-        }else{
-            return response()->json(['message' => 'Unauthorized.'], 401);
-        }
+        // }else{
+        //     return response()->json(['message' => 'Unauthorized.'], 401);
+        // }
     }
 
     public function getStore($store_id){
@@ -127,34 +128,29 @@ class StoreController extends Controller
 
     // CATEGORY - START //
 
-    public function addCategory(Request $request){
-        if(auth()->user()->usertype=="seller"){
+    public function addCategory(Request $request, $sellerId, $storeId){
             $request->validate([
-                'store_id'=>'required|int',
-                'newCategory'=>'required|string'
+                'name'=>'required|string'
             ]);
             
             // first we check id the store_id belongs to this user
-            $store = Store::find($request->input('store_id'));
+            $store = Store::find($storeId);
             if($store->seller_id!=auth()->user()->id){
-                return response()->json(['message' => 'How about you add categories to your OWN store instead.'], 401);
+                return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
             }
             
 
             try {
                 $category = Category::create([
-                'name' => $request->input('newCategory'),
-                'store_id'=>$request->input('store_id'),
+                'name' => $request->input('name'),
+                'store_id'=>$storeId,
             ]);
 
-            return response()->json(['message' => 'The category has succesfully been added.'], 200);
+            return redirect()->route('sellers.editStore', ['seller' => auth()->user()->id, 'store' => $store->id]);
 
             } catch (\Throwable $th) {
-                return response()->json(['message' =>  'There was an error adding your category.', 'exception_message' => $th->getMessage()], 402);
+                return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
             }
-        }else{
-            return response()->json(['message' => 'Unauthorized.'], 401);
-        }
     }
 
     public function getCategoriesForStore($store_id){
@@ -169,69 +165,80 @@ class StoreController extends Controller
         }   
     }
 
-    public function deleteCategory(Request $request){
-        if(auth()->user()->usertype=="seller"){
+    public function deleteCategory(Request $request, $sellerId, $storeId, $categoryId){
             try {
-                $request->validate([
-                    'category_id'=>'required|int'
-                ]);
                 // check if the seller owns the store that this category belongs to.
-                $category = Category::find($request->category_id);
+                $category = Category::find($categoryId);
                 $store = $category->store;
                 if($store->seller_id==auth()->user()->id){
                     // if it is we delete the category
                     $category->delete();
 
-                    return response()->json(['message' => 'Succesfully deleted category.'], 200);
+                    return redirect()->route('sellers.editStore', ['seller' => auth()->user()->id, 'store' => $store->id]);
                 }else{
-                    return response()->json(['message' => 'You cannot delete this category.'], 401);
+                    return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
                 }
             } catch (\Throwable $th) {
-                return response()->json(['message' =>  'There was an error while deleting this category.', 'exception_message' => $th->getMessage()], 403);
+                return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
             }
-        }else{
-            return response()->json(['message' => 'Unauthorized.'], 401);
-        }
     }
 
     // CATEGORY - END //
 
     // PRODUCT - START //
 
-    public function addProduct(Request $request){
-        if(auth()->user()->usertype=="seller"){
+    public function addProduct(Request $request, $sellerId, $storeId){
             try {
                 $validatedData = $request->validate([
                     'name' => 'required|string|max:255',
                     'product_description' => 'required|string',
                     'price' => 'required|numeric|between:0.00,999999.99',
-                    'quantity' => 'required|int|min:0',
-                    'image_url' => 'nullable|string|max:255',
-                    'auction_status' => 'required|integer|between:0,1', // Assuming auction_status is a binary value (0 or 1)
-                    'store_id' => 'required|exists:stores,id', // Assuming store_id references the id column in the stores table
+                    'quantity' => 'int|min:0',
+                    'image_url' => 'nullable|image|max:255',
+                    'auction_status' => 'required|between:0,1', // Assuming auction_status is a binary value (0 or 1)
+                    //'store_id' => 'required|exists:stores,id', // Assuming store_id references the id column in the stores table
                     'category_id' => 'required|exists:categories,id', // Assuming category_id references the id column in the categories table
                 ]);
+                
                 // first we check id the store_id belongs to this user
-                $store = Store::find($request->input('store_id'));
+                $store = Store::find($storeId);
                 if($store->seller_id!=auth()->user()->id){
-                    return response()->json(['message' => 'How about you add products to your OWN store instead.'], 401);
+                    return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
                 }
 
-                // Create the product
-                $product = Product::create($validatedData);
+                $newImageName = time() .$store->id . '.' . $request->image_url->extension();
+                $request->image_url->move('products', $newImageName);
 
-                return response()->json(['message' => 'Succesfully added product.'], 200);
+                // Create the product
+                $product = Product::create([
+                    'name' => $request->input('name'),
+                    'product_description'=>$request->input('product_description'),
+                    'price'=>$request->input('price'),
+                    'quantity'=>$request->input('quantity')?$request->input('quantity'):1,
+                    'image_url'=>$newImageName,
+                    'auction_status'=>$request->input('auction_status'),
+                    'store_id'=>$storeId,
+                    'category_id'=>$request->input('category_id'),                  
+                ]);
+
+                //if there's auction option let's make it
+                if($request->auction_status==1){
+                    Auction::create([
+                        'starting_price' => $request->price,
+                        'product_id' => $product->id,
+                        'store_id' => $storeId
+                    ]);
+                }
+
+                return redirect()->route('sellers.editStore', ['seller' => auth()->user()->id, 'store' => $store->id]);
 
             } catch (\Throwable $th) {
-                return response()->json(['message' =>  'There was an error while adding this product.', 'exception_message' => $th->getMessage()], 403);
+                dd($th->getMessage());
+                return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
             }
-        }else{
-            return response()->json(['message' => 'Unauthorized.'], 401);
-        }
     }
     
-    public function editProduct(Request $request, $productId){
-        if(auth()->user()->usertype=="seller"){
+    public function editProduct(Request $request, $sellerId, $storeId, $productId){
                 try {
                     $product = Product::findOrFail($productId);
 
@@ -246,58 +253,67 @@ class StoreController extends Controller
                     // Check if the product belongs to the authenticated user's store
                     $store = Store::find($product->store_id);
                     if ($store->seller_id != auth()->user()->id) {
-                        return response()->json(['message' => 'How about you edit products from your OWN store instead.'], 401);
+                        return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
                     }
     
                     // Update the product with validated data
                     $product->update($validatedData);
     
-                    return response()->json(['message' => 'Succesfully updated product.'], 200);
-    
+                    return redirect()->route('sellers.editStore', ['seller' => auth()->user()->id, 'store' => $store->id]);
+
                 } catch (\Throwable $th) {
-                    return response()->json(['message' =>  'There was an error while editing this product.', 'exception_message' => $th->getMessage()], 403);
+                    dd($th->getMessage());
+                    return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
                 }
-        }else{
-            return response()->json(['message' => 'Unauthorized.'], 401);
-        }
     }
     
-    public function deleteProduct($productId){
-        if(auth()->user()->usertype=="seller"){
+    public function deleteProduct($sellerId, $storeId, $productId){
             try {
                 $product = Product::findOrFail($productId);
                 // Check if the product belongs to the authenticated user's store
                 $store = Store::find($product->store_id);
                 if ($store->seller_id != auth()->user()->id) {
-                    return response()->json(['message' => 'How about you delete products from your OWN store instead.'], 401);
+                    return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
                 }
 
                 $product->delete();
 
-                return response()->json(['message' => 'Succesfully deleted product.'], 200);
+                return redirect()->route('sellers.editStore', ['seller' => auth()->user()->id, 'store' => $store->id]);
 
             } catch (\Throwable $th) {
-                return response()->json(['message' =>  'There was an error while deleting this product.', 'exception_message' => $th->getMessage()], 403);
+                dd($th->getMessage());
+                return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
             }
-        }else{
-            return response()->json(['message' => 'Unauthorized.'], 401);
-        }
     }
     
     public function getProducts($store_id){
-        if(auth()->user()){
             try {
                 $store = Store::find($store_id);
+                return view('home.store_view')->with(['all_products'=>$store->products, 'all_categories' => $store->categories]);
 
-                return response()->json(['message' => 'Succesfully retreived products for store named '. $store->name .'.', 'data' => $store->products], 200);
+                // return response()->json(['message' => 'Succesfully retreived products for store named '. $store->name .'.', 'data' => $store->products], 200);
             } catch (\Throwable $th) {
                 return response()->json(['message' =>  'There was an error while retreiving products for this store.', 'exception_message' => $th->getMessage()], 403);
-            }
-        }else{
-            return response()->json(['message' => 'Unauthorized.'], 401);
-        }
-        
+            }    
     }
 
     // PRODUCT - END //
+
+    // AUCTION - START //
+
+    public function deleteAuction($sellerId, $storeId, $auctionId){
+        try {
+            $auction = Auction::findOrFail($auctionId);
+            if ($auction->store->seller_id != auth()->user()->id) {
+                return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
+            }
+            $auction->product->delete();
+            $auction->delete();
+            return redirect()->route('sellers.editStore', ['seller' => auth()->user()->id, 'store' => $auction->store->id]);
+        } catch (\Throwable $th) {
+            return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
+        }
+    }
+
+    // AUCTION - END //
 }

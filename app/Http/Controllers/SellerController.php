@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Store;
@@ -34,7 +35,7 @@ class SellerController extends Controller
 
 
         $seller = $store->seller()->first();
-        return view('sellers.edit_store', ['store' => $store, 'seller' => $seller]);
+        return view('sellers.edit_store', ['store' => $store, 'seller' => $seller, 'categories' => $store->categories, 'products' => $store->products, 'auctions' => $store->auctions]);
     }
 
     public function updateStore(Request $request, $sellerId, $storeId)
@@ -55,7 +56,7 @@ class SellerController extends Controller
         ]);
 
         // Redirect back to the edit store page with a success message
-        return redirect()->route('sellers.show', ['seller' => auth()->user()->id])->with('success', 'Store updated successfully!');
+        return redirect()->route('sellers.editStore', ['seller' => auth()->user()->id, 'store' => $store->id])->with('success', 'Store updated successfully!');
     }
 
     public function editStore(Request $request, $storeId)
@@ -74,5 +75,26 @@ class SellerController extends Controller
         }
     }
 
+    public function showAddCategoryForm($sellerId, $storeId) {
+        $store = Store::findOrFail($storeId);
 
+
+        $seller = $store->seller()->first();
+        return view('sellers.addCategory', ['store' => $store, 'seller' => $seller]);
+    }
+
+    public function showAddProductForm($sellerId, $storeId){
+        $store = Store::findOrFail($storeId);
+
+
+        $seller = $store->seller()->first();
+        return view('sellers.addProduct', ['store' => $store, 'seller' => $seller, 'categories' => $store->categories]);
+    }
+
+    public function showEditProductForm($sellerId, $storeId, $productId){
+        $store = Store::findOrFail($storeId);
+        $seller = $store->seller()->first();
+        $product = Product::findOrFail($productId);
+        return view('sellers.editProduct', ['store' => $store, 'seller' => $seller, 'product' => $product, 'categories' => $store->categories]);
+    }
 }
