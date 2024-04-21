@@ -49,7 +49,12 @@
                 <a href="#" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti" data-notify="0">
                     <i class="zmdi zmdi-favorite-outline"></i>
                 </a>
-            </div></nav>
+            </div>
+            <a href="{{ route('chat.users') }}" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti">
+        <i class="zmdi zmdi-comment"></i>
+    </a>
+
+        </nav>
 
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <!-- Teams Dropdown -->

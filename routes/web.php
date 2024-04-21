@@ -15,6 +15,10 @@ use App\Http\Controllers\StoreController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+use App\Http\Controllers\UserController;
+
+Route::get('/chat-users', [UserController::class, 'index'])->name('chat.users');
+
 
 Route::get('/', function () {return view('home.home');})->middleware('auth');
 Route::get('/stores', [StoreController::class, 'getAllApprovedStores']);
@@ -37,7 +41,9 @@ Route::get('/seller-order-address', function () {
     return view('seller-order-address');
 });
 
-Route::get('/chat','App\Http\Controllers\PusherController@index');
+Route::get('/chat', 'PusherController@index');
+// Route::get('/users', 'PusherController@showUserList');
+Route::get('/chat/{user}', 'PusherController@startChatWithUser');
 
 Route::post('/broadcast','App\Http\Controllers\PusherController@broadcast');
 Route::post('/receive','App\Http\Controllers\PusherController@receive');
@@ -47,24 +53,30 @@ Route::post('/receive','App\Http\Controllers\PusherController@receive');
 
 Route::get('/user-list', 'App\Http\Controllers\PusherController@showUserList');
 Route::get('/start-chat/{user}', 'App\Http\Controllers\PusherController@startChatWithUser');
-use App\Http\Controllers\UserController;
 
-Route::get('/users', [UserController::class, 'index']);
+
+// Route::get('/users', [UserController::class, 'index']);
 Route::get('/chat/{user}', [UserController::class, 'startChat'])->name('startChat');
 
 
-
+Route::post('/store-message', [UserController::class, 'storeMessage']);
 use App\Http\Controllers\AdminController;
+Route::get('/fetch-messages/{userId}', [UserController::class, 'fetchMessages']);
 
-// Route::get('/admin', [AdminController::class, 'index']);
-Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
-
+////////////////////////////
+Route::get('/admin/users', [UserController::class, 'getAllUsers'])->name('admin');
+Route::post('/admin/users/reset-password/{user}', [AdminController::class, 'resetPassword'])->name('admin.resetPassword');
 
 Route::put('/admin/stores/{store}', [AdminController::class, 'toggleStoreStatus'])->name('admin.toggleStoreStatus');
 use App\Http\Controllers\SellerController;
 use App\Models\Store;
 
 Route::get('/admin/store/{store}/edit', [SellerController::class, 'editStore'])->name('admin.editStore');
+Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+Route::post('/admin/reset-user-password/{user}', [AdminController::class, 'resetUserPassword'])->name('admin.resetUserPassword');
+
+
+
 
 
 Route::put('/admin/store/{store}', [AdminController::class, 'updateStore'])->name('admin.updateStore');

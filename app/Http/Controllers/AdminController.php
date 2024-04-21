@@ -4,14 +4,23 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Store;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
-{
-    public function index()
+{ public function index()
     {
         $stores = Store::all();
-        return view('admin', ['stores' => $stores]);
+        $users = User::all();
+
+        return view('admin', ['stores' => $stores, 'users' => $users]);
     }
+
+    public function getAllUsers()
+{
+    $users = User::all();
+    return view('admin', ['users' => $users]);
+}
 
     public function toggleStoreStatus(Request $request, Store $store)
     {
@@ -45,6 +54,22 @@ public function updateStore(Request $request, Store $store)
     ]);
 
     return redirect()->route('admin.index')->with('success', 'Store updated successfully');
+}
+public function resetUserPassword(Request $request, User $user)
+{
+    $request->validate([
+        'old_password' => 'required|string',
+        'new_password' => 'required|string|min:8',
+    ]);
+
+    if (!Hash::check($request->old_password, $user->password)) {
+        return redirect()->back()->with('error', 'Old password is incorrect.');
+    }
+
+    $user->password = Hash::make($request->new_password);
+    $user->save();
+
+    return redirect()->back()->with('success', 'Password reset successfully.');
 }
 
 
