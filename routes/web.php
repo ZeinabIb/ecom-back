@@ -61,6 +61,8 @@ Route::get('/chat/{user}', [UserController::class, 'startChat'])->name('startCha
 
 Route::post('/store-message', [UserController::class, 'storeMessage']);
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PusherController;
+
 Route::get('/fetch-messages/{userId}', [UserController::class, 'fetchMessages']);
 
 ////////////////////////////
@@ -105,3 +107,19 @@ Route::middleware([
         return view('home.home');
     })->name('home.home');
 });
+
+
+
+
+Route::get('/pusher', function(){
+return view('pusher');
+});
+
+Route::get('/pusher2', function(){
+    return view('pusher2');
+    });
+
+
+
+Route::get('/sendPusher', [PusherController::class,"sendPusher"]);
+Route::post('/sendPusher', [PusherController::class, "sendPusher"]);
