@@ -20,6 +20,7 @@ class Cart extends Model
     // get all the products in this cart
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'carts_has_products', 'cart_id', 'product_id');
+        return $this->belongsToMany(Product::class, 'carts_has_products')
+            ->withPivot('quantity');
     }
 }

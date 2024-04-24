@@ -2,15 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewOrder;
+use App\Mail\OrderCreatedMail;
+use App\Mail\OrderReceivedMail;
+use Stripe;
 use App\Models\Store;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\StoreAwaitingReviewNotification;
 use App\Mail\StoreReviewEmail;
 use App\Models\Auction;
+use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -124,6 +131,14 @@ class StoreController extends Controller
         }
     }
 
+    public function getStoresLike(Request $request){
+        $searchQuery = $request->input('search_store');
+        $stores = Store::where('name', 'like', "%$searchQuery%")
+                            ->get();
+
+        return view('home.stores')->with(['all_stores'=>$stores]);
+    }
+
     // STORE - END //
 
     // CATEGORY - START //
@@ -194,7 +209,7 @@ class StoreController extends Controller
                     'product_description' => 'required|string',
                     'price' => 'required|numeric|between:0.00,999999.99',
                     'quantity' => 'int|min:0',
-                    'image_url' => 'nullable|image|max:255',
+                    'image_url' => 'nullable|image|max:700',
                     'auction_status' => 'required|between:0,1', // Assuming auction_status is a binary value (0 or 1)
                     //'store_id' => 'required|exists:stores,id', // Assuming store_id references the id column in the stores table
                     'category_id' => 'required|exists:categories,id', // Assuming category_id references the id column in the categories table
@@ -296,6 +311,203 @@ class StoreController extends Controller
                 return response()->json(['message' =>  'There was an error while retreiving products for this store.', 'exception_message' => $th->getMessage()], 403);
             }    
     }
+
+    public function getProductsLike(Request $request, $store_id){
+
+        $searchQuery = $request->input('search_product');
+        $store = Store::find($store_id);
+        $products = Product::where('store_id', $store_id)
+                            ->where('name', 'like', "%$searchQuery%")
+                            ->get();
+
+        return view('home.store_view')->with(['all_products'=>$products, 'all_categories' => $store->categories]);
+    }
+
+    public function productDetails($store_id, $product_id){
+        try {
+            return view('home.product_details')->with(['product'=>Product::findOrFail($product_id)]);
+        } catch (\Throwable $th) {
+            return redirect()->route('home.home');
+        }
+    }
+
+    public function removeProductFromCart($product_id)
+    {
+        try {
+            $cart = Auth::user()->cart;
+
+            $productInCart = $cart->products()->where('id', $product_id)->first();
+
+            if ($productInCart) {
+                $cart->products()->detach($product_id);
+
+                return redirect()->back();
+            } else {
+                return redirect()->route('home.home');
+            }
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }
+        
+    }
+
+    public function addProductToCart(Request $request, $store_id, $product_id){
+        try {
+            // Get product
+            $product = Product::findOrFail($product_id);
+    
+            // Retrieve the user's cart
+            $cart = auth()->user()->cart;
+    
+            // Get the quantity from the request
+            $quantity = $request->num_product;
+    
+            // Check if the product already exists in the cart
+            if ($cart->products->contains($product->id)) {
+                // If the product exists, update the quantity
+                $cart->products()->updateExistingPivot($product->id, ['quantity' => $quantity]);
+            } else {
+                // If the product does not exist, attach it with the quantity
+                $cart->products()->attach($product->id, ['quantity' => $quantity]);
+            }
+    
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }
+    }
+
+    public function getCart(){
+        return view('home.cart');
+    }
+
+    public function stripe(Request $request) {
+        return view('home.stripe')->with(['totalprice'=>$request->totalprice, 'location_lat'=>$request->location_lat, 'location_lng'=>$request->location_lng]);
+    }
+
+    public function stripePost(Request $request)
+    {
+        Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+    
+        Stripe\Charge::create ([
+                "amount" => $request->totalprice * 100,
+                "currency" => "usd",
+                "source" => $request->stripeToken,
+                "description" => "Thanks for payment." 
+        ]);
+
+        // Retrieve location data
+        $locationLat = $request->location_lat;
+        $locationLng = $request->location_lng;
+
+        // Fetch products from the authenticated user's cart
+        $user = Auth::user();
+        $products = $user->cart->products;
+
+        // Group products by store (seller)
+        $groupedProducts = $products->groupBy('store_id');
+
+        // Create orders and associate products with them
+        foreach ($groupedProducts as $storeId => $storeProducts) {
+            // Get the seller ID from the first product's store
+            $sellerId = $storeProducts->first()->store->seller_id;
+
+            $order = new Order();
+            $order->buyer_id = $user->id;
+            $order->seller_id = $sellerId; // Set the seller ID
+            $order->location_lat = $locationLat;
+            $order->location_lng = $locationLng;
+            $order->total_amount = 0; // Initialize total price for this order
+            $order->payment_status = "Paid Via Card";
+
+            // Save the order
+            $order->save();
+
+            // Calculate total price for this order
+            $totalPrice = 0;
+
+            // Associate products with the order and calculate total price
+            foreach ($storeProducts as $product) {
+                $quantityInCart = $product->pivot->quantity;
+                $order->products()->attach($product->id, ['quantity' => $quantityInCart]);
+                $totalPrice += $product->price * $quantityInCart;
+            }
+
+            // Update total price for this order
+            $order->total_amount = $totalPrice;
+            $order->save();
+            $seller_email = $storeProducts->first()->store->seller->email;
+            Mail::to($seller_email)->send(new OrderReceivedMail($order->products));
+
+            // Dispatch the NewOrder event
+            event(new NewOrder());
+        }
+
+        Mail::to(auth()->user()->email)->send(new OrderCreatedMail());
+
+        // Clear the user's cart
+        $user->cart->products()->detach();
+
+        return back()->with('success_message', 'Payment successful. Orders created.');
+    }
+
+    public function cashOnDelivery(Request $request){
+        
+        // Retrieve location data
+        $locationLat = $request->location_lat;
+        $locationLng = $request->location_lng;
+
+        // Fetch products from the authenticated user's cart
+        $user = Auth::user();
+        $products = $user->cart->products;
+
+        // Group products by store (seller)
+        $groupedProducts = $products->groupBy('store_id');
+
+        // Create orders and associate products with them
+        foreach ($groupedProducts as $storeId => $storeProducts) {
+            // Get the seller ID from the first product's store
+            $sellerId = $storeProducts->first()->store->seller_id;
+
+            $order = new Order();
+            $order->buyer_id = $user->id;
+            $order->seller_id = $sellerId; // Set the seller ID
+            $order->location_lat = $locationLat;
+            $order->location_lng = $locationLng;
+            $order->total_amount = 0; // Initialize total price for this order
+            $order->payment_status = "Cash On Delivery";
+
+            // Save the order
+            $order->save();
+
+            // Calculate total price for this order
+            $totalPrice = 0;
+
+            // Associate products with the order and calculate total price
+            foreach ($storeProducts as $product) {
+                $quantityInCart = $product->pivot->quantity;
+                $order->products()->attach($product->id, ['quantity' => $quantityInCart]);
+                $totalPrice += $product->price * $quantityInCart;
+            }
+
+            // Update total price for this order
+            $order->total_amount = $totalPrice;
+            $order->save();
+            $seller_email = $storeProducts->first()->store->seller->email;
+            Mail::to($seller_email)->send(new OrderReceivedMail($order->products));
+
+            // Dispatch the NewOrder event
+            event(new NewOrder());
+        }
+
+        Mail::to(auth()->user()->email)->send(new OrderCreatedMail());
+
+        // Clear the user's cart
+        $user->cart->products()->detach();
+
+        return back()->with('success_message', 'Orders created.');
+    }
+    
 
     // PRODUCT - END //
 

@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\OrderDeliveredMail;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Store;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Mail;
 
 class SellerController extends Controller
 {
@@ -20,10 +23,12 @@ class SellerController extends Controller
 
     public function show($sellerId)
     {
-        $seller = User::findOrFail($sellerId);
+        $seller = User::findOrFail(auth()->user()->id);
         $stores = Store::All()
         ->where("seller_id", auth()->user()->id);
-        return view('sellers.seller', ['seller' => $seller, 'stores' => $stores]);
+        $orders = Order::All()
+        ->where("seller_id", auth()->user()->id);
+        return view('sellers.seller', ['seller' => $seller, 'stores' => $stores, 'orders' => $orders]);
     }
 
     public function showAddStoreForm() {
@@ -96,5 +101,26 @@ class SellerController extends Controller
         $seller = $store->seller()->first();
         $product = Product::findOrFail($productId);
         return view('sellers.editProduct', ['store' => $store, 'seller' => $seller, 'product' => $product, 'categories' => $store->categories]);
+    }
+
+    public function viewOrder($orderId){
+        try {
+            $order = Order::findOrFail($orderId);
+            return view('sellers.viewOrder')->with(['products' => $order->products, 'order' => $order]);
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }
+    }
+    public function changeOrderStatus($orderId){
+        try {
+            $order = Order::findOrFail($orderId);
+            $order->order_status = "delivered";
+            $order->save();
+            Mail::to($order->user->email)->send(new OrderDeliveredMail());
+
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }
     }
 }

@@ -18,7 +18,17 @@ use App\Http\Controllers\StoreController;
 
 Route::get('/', function () {return view('home.home');})->middleware('auth');
 Route::get('/stores', [StoreController::class, 'getAllApprovedStores']);
-Route::get('/stores/{store_id}/', [StoreController::class, 'getProducts']);
+Route::get('/stores/search', [StoreController::class, 'getStoresLike'])->name('store.filtered');
+Route::get('/stores/{store_id}', [StoreController::class, 'getProducts'])->name('store.view');
+Route::get('/stores/{store_id}/search', [StoreController::class, 'getProductsLike'])->name('product.filtered');
+Route::get('/stores/{store_id}/products/{product_id}', [StoreController::class, 'productDetails'])->name('home.viewProduct');
+Route::post('/stores/{store_id}/products/{product_id}/addToCart', [StoreController::class, 'addProductToCart'])->name('user.addToCart');
+Route::get('/cart/{id}', [StoreController::class, 'removeProductFromCart'])->name('user.removeFromCart');
+Route::get('/cart', [StoreController::class, 'getCart'])->name('user.viewCart')->middleware('auth');
+
+Route::post('/cart/stripe', [StoreController::class, 'stripe'])->name('home.stripePayement')->middleware('auth');
+Route::post('/cart/stripe/submit', [StoreController::class,'stripePost'])->name('home.stripePayementSubmit');
+Route::post('/cart/cashondelivery', [StoreController::class,'cashOnDelivery'])->name('home.cashOnDeliverySubmit');
 
 Route::get('/auth/{provider}/redirect', [AuthController::class, 'redirect']);
 
@@ -83,6 +93,8 @@ Route::get('/sellers/{seller}/editStore/{store}/deleteProduct/{product}', [Store
 Route::get('/sellers/{seller}/editStore/{store}/editproduct/{product}', [SellerController::class, 'showEditProductForm'])->name('sellers.editProduct')->middleware('checkSeller');
 Route::put('/sellers/{seller}/editStore/{store}/editproduct/{product}', [StoreController::class, 'editProduct'])->name('sellers.submitEditProduct')->middleware('checkSeller');
 Route::delete('/sellers/{seller}/editStore/{store}/deleteAuction/{auction}', [StoreController::class, 'deleteAuction'])->name('sellers.deleteAuction')->middleware('checkSeller');
+Route::get('/sellers/order/{id}', [SellerController::class, 'viewOrder'])->name('sellers.viewOrder')->middleware('checkSeller');
+Route::get('/sellers/order/{id}/changeOrderStatus', [SellerController::class, 'changeOrderStatus'])->name('sellers.changeOrderStatus')->middleware('checkSeller');
 
 Route::middleware([
     'auth:sanctum',
