@@ -18,6 +18,11 @@ class User extends Authenticatable implements MustVerifyEmail
     use Notifiable;
     use TwoFactorAuthenticatable;
 
+    public function cart()
+    {
+        return $this->hasOne(Cart::class, 'buyer_id');
+    }
+
     /**
      * The attributes that are mass assignable.
      *

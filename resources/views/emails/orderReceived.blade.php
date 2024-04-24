@@ -1,9 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Home</title>
+	<title>Cart</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+          margin: 0 auto;
+        }
+  
+        .sb-title {
+          position: relative;
+          top: -12px;
+          font-family: Roboto, sans-serif;
+          font-weight: 500;
+        }
+  
+        .sb-title-icon {
+          position: relative;
+          top: -5px;
+        }
+  
+        .card-container {
+          display: flex;
+          height: 500px;
+          margin: 0 auto;
+          margin-top: 10px;
+        }
+  
+        .panel {
+          background: white;
+          width: 300px;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-around;
+        }
+  
+        .half-input-container {
+          display: flex;
+          justify-content: space-between;
+        }
+  
+        .half-input {
+          max-width: 120px;
+        }
+  
+        .map {
+          width: 100%;
+        }
+  
+        h2 {
+          margin: 0;
+          font-family: Roboto, sans-serif;
+        }
+  
+        input {
+          height: 30px;
+        }
+  
+        input {
+          border: 0;
+          border-bottom: 1px solid black;
+          font-size: 14px;
+          font-family: Roboto, sans-serif;
+          font-style: normal;
+          font-weight: normal;
+        }
+  
+        input:focus::placeholder {
+          color: white;
+        }
+  
+        .button-cta {
+          align-self: start;
+          background-color: #1976d2;
+          border: 0;
+          border-radius: 21px;
+          color: white;
+          cursor: pointer;
+          font-family: "Google Sans Text", sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          line-height: 27px;
+          padding: 3.5px 10.5px;
+        }
+  
+        .custom-map-control-button {
+          align-self: start;
+          background-color: #1976d2;
+          border: 0;
+          border-radius: 21px;
+          color: white;
+          cursor: pointer;
+          font-family: "Google Sans Text", sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          line-height: 27px;
+          padding: 3.5px 10.5px;
+          margin-top: 10px;
+        }
+  
+        .custom-map-control-button:hover {
+          background: rgb(50, 100, 200);
+        }
+      </style>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans+Text:500&amp;lang=en">
 <!--===============================================================================================-->
 	<link rel="icon" type="image/png" href="/images/icons/favicon.png"/>
 <!--===============================================================================================-->
@@ -35,108 +138,103 @@
 	<link rel="stylesheet" type="text/css" href={{ asset('home/css/main.css')}}>
 <!--===============================================================================================-->
 </head>
-<body class="animsition">
-    @include('home.header')
-    <!-- Product -->
-	<div class="bg0 p-b-140">
+<body>	
+	<!-- Shoping Cart -->
+	<div class="bg0 p-t-75 p-b-85">
 		<div class="container">
-			<div class="flex-w flex-sb-m p-b-52 p-t-4">
-				<div class="flex-w flex-l-m filter-tope-group m-tb-10">
-					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
-						All Products
-					</button>
+			<div class="row">
+				<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
+					<div class="m-l-25 m-r--38 m-lr-0-xl">
+						<div class="wrap-table-shopping-cart">
+							<table class="table-shopping-cart">
+								<tr class="table_head">
+									<th class="column-1">Product</th>
+									<th class="column-2">Price</th>
+									<th class="column-3">Quantity</th>
+									<th class="column-4">Total</th>
+								</tr>
 
-                    @foreach ($all_categories as $category)
-                        <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".{{$category->name}}">
-                            {{ $category->name }}
-                        </button>
-                    @endforeach
+                                @php
+                                    $total = 0; // Initialize total variable
+                                @endphp
+                                @foreach (json_decode($products) as $product)
+                                <tr class="table_row">
+                                    <td class="column-1">{{ $product->name }}</td>
+                                    <td class="column-2">$ {{ $product->price }}</td>
+                                    <td class="column-3">{{ $product->pivot->quantity }}</td> <!-- Accessing the quantity from pivot table -->
+                                    <td class="column-4">$ {{ number_format($product->price * $product->pivot->quantity, 2) }}</td>
+                                </tr>
 
+                                @php
+                                    // Update total by adding the price * quantity of current product
+                                    $total += $product->price * $product->pivot->quantity; // Accessing quantity from pivot table
+                                @endphp
+                                @endforeach
 
-					{{-- <button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".men">
-						Men
-					</button>
-
-					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".bag">
-						Bag
-					</button>
-
-					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".shoes">
-						Shoes
-					</button>
-
-					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5" data-filter=".watches">
-						Watches
-					</button> --}}
-				</div>
-
-				<div class="flex-w flex-c-m m-tb-10">
-					<div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
-						<i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
-						<i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-						Search
+							</table>
+						</div>
 					</div>
 				</div>
 
-				<!-- Search product -->
-				<div class="dis-none panel-search w-full p-t-10 p-b-15">
-					<div class="bor8 dis-flex p-l-15">
-						<form class="bor8 dis-flex p-l-15" action="{{ route('product.filtered', ['store_id' => $all_products[0]->store->id]) }}" method="GET">
-							@csrf
-							<button type="submit" class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-								<i class="zmdi zmdi-search"></i>
-							</button>
+				<div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
+					<div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
+						<h4 class="mtext-109 cl2 p-b-30">
+							Cart Totals
+						</h4>
 
-							<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search_product" id="search_product" placeholder="Search">
-						</form>
-					</div>
-				</div>
-			</div>
+						<div class="flex-w flex-t bor12 p-b-13">
+							<div class="size-208">
+								<span class="stext-110 cl2">
+									Subtotal:
+								</span>
+							</div>
 
-			<div class="row isotope-grid">
+							<div class="size-209">
+								<span class="mtext-110 cl2">
+									$ {{ number_format($total, 2) }}
+								</span>
+							</div>
+						</div>
 
-                @foreach ($all_products as $product)
-                    <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item {{$product->category->name}}">
-                        <!-- Block2 -->
-                        <div class="block2">
-                            <div class="block2-pic hov-img0">
-                                <img src="/products/{{ $product->image_url }}" alt="IMG-PRODUCT" height="250px" style="object-fit: cover; width: 100%; height: 250px;">
-								<a href="{{ route('home.viewProduct', ['store_id'=>$product->store->id, 'product_id'=>$product->id]) }}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
-                                    Quick View
-                                </a>
-                            </div>
+						<div class="flex-w flex-t bor12 p-t-15 p-b-30">
+							<div class="size-208 w-full-ssm">
+								<span class="stext-110 cl2">
+									Developper's cut:
+								</span>
+							</div>
 
-                            <div class="block2-txt flex-w flex-t p-t-14">
-                                <div class="block2-txt-child1 flex-col-l ">
-                                    <a href="product-detail.html" class="stext-104 cl4 hov-cl1 trans-04 js-name-b2 p-b-6">
-                                        {{ $product->name }}
-                                    </a>
-                                    <span class="stext-105 cl3">
-                                        ${{ $product->price }}
+							<div class="size-209 p-r-18 p-r-0-sm w-full-ssm">
+								<div class="size-209">
+                                    <span class="mtext-110 cl2">
+                                        $ {{ number_format($total*0.1, 2) }}
                                     </span>
+                                    @php
+                                        // Update total by adding the price * quantity of current product
+                                        $total += $total*0.1;
+                                    @endphp
                                 </div>
+							</div>
+						</div>
 
-                                <div class="block2-txt-child2 flex-r p-t-3">
-                                    <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
-                                        <img class="icon-heart1 dis-block trans-04" src="/home/images/icons/icon-heart-01.png" alt="ICON">
-                                        <img class="icon-heart2 dis-block trans-04 ab-t-l" src="/home/images/icons/icon-heart-02.png" alt="ICON">
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
+						<div class="flex-w flex-t p-t-27 p-b-33">
+							<div class="size-208">
+								<span class="mtext-101 cl2">
+									Total:
+								</span>
+							</div>
 
-			<!-- Load more -->
-			<div class="flex-c-m flex-w w-full p-t-45">
-				<a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-					Load More
-				</a>
+							<div class="size-209 p-t-1">
+								<span class="mtext-110 cl2">
+									$ {{ number_format($total, 2) }}
+								</span>
+							</div>
+						</div>
+          </div>
+				</div>
 			</div>
 		</div>
 	</div>
-    @include('home.footer')
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxWvBQQy-KxHaFkQXbo0dwPiyRy-rHTP8&libraries=places,marker&callback=initMap&solution_channel=GMP_QB_addressselection_v2_cABC" async defer></script>
     <!--===============================================================================================-->
 	<script src="/home/vendor/jquery/jquery-3.2.1.min.js"></script>
     <!--===============================================================================================-->
@@ -244,5 +342,3 @@
 
 </body>
 </html>
-
-

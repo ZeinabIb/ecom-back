@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\NewOrder;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StoreController;
 use Illuminate\Http\Request;
