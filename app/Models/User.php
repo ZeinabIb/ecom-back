@@ -27,6 +27,10 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Invitation::class, 'buyer_id');
     }
+    public function wishlist()
+    {
+        return $this->hasOne(Wishlist::class, 'buyer_id');
+    }
 
     /**
      * The attributes that are mass assignable.

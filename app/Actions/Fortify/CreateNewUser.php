@@ -2,6 +2,7 @@
 
 namespace App\Actions\Fortify;
 
+use App\Models\Wishlist;
 use App\Models\Cart;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -36,6 +37,10 @@ class CreateNewUser implements CreatesNewUsers
         ]);
 
         Cart::create([
+            'buyer_id' => $user->id,
+        ]);
+
+        Wishlist::create([
             'buyer_id' => $user->id,
         ]);
 
