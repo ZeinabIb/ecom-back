@@ -29,6 +29,12 @@ class Auction extends Model
         return $this->hasMany(Bid::class, 'auction_id');
     }
 
+    // Define a method to get the highest bid for the auction
+    public function highestBid()
+    {
+        return $this->hasOne(Bid::class, 'auction_id')->latest('bid_amount');
+    }
+
     // get allllllllll the invites to this auction
     public function invitations()
     {

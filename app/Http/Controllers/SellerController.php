@@ -3,13 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Mail\OrderDeliveredMail;
+use App\Models\Auction;
+use App\Models\Invitation;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Store;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redis;
 
 class SellerController extends Controller
 {
@@ -122,5 +126,36 @@ class SellerController extends Controller
         } catch (\Throwable $th) {
             dd($th->getMessage());
         }
+    }
+
+    public function showInviteBuyerToAuctionForm($sellerId, $storeId, $auctionId){
+        $auction = Auction::findOrFail($auctionId);
+        $store = Store::findOrFail($storeId);
+        $seller = $store->seller()->first();
+        return view('sellers.inviteBuyer')->with(['store' => $store, 'seller' => $seller, 'auction' => $auction]);
+    }
+
+    public function inviteBuyerToAuction(Request $request,$sellerId, $storeId, $auctionId){
+        try {
+            $auction = Auction::findOrFail($auctionId);
+            $store = Store::findOrFail($storeId);
+            $seller = $store->seller()->first();
+            $buyer = User::where('email', $request->email)->get()->first();
+
+            $validatedData = $request->validate([
+                'email' => 'required|email|exists:users,email',
+            ]);
+
+            Invitation::create([
+                'status' => "pending",
+                'auction_id' => $auctionId,
+                'buyer_id' => $buyer->id,
+            ]);
+
+            return redirect()->route('sellers.auctionDetails', ['seller' => auth()->user()->id, 'store' => $storeId, 'auction' => $auctionId]);
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }
+
     }
 }

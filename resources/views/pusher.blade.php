@@ -27,12 +27,12 @@
     <script>
         Pusher.logToConsole = true;
 
-        var pusher = new Pusher('023a642915c846c21251', {
+        var pusher = new Pusher('a2e0226e8071fa644e1a', {
             cluster: 'ap2'
         });
 
-        var channel = pusher.subscribe('my-channel');
-        channel.bind('my-event', function(data) {
+        var channel = pusher.subscribe('my-channel1');
+        channel.bind('my-event1', function(data) {
             var messageContainer = document.getElementById('messages');
             var messageHTML = '<div class="message-bubble">' +
                                     '<span class="' + data.type + '">' + data.sender + ': </span>' +
