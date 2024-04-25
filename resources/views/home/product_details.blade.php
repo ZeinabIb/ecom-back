@@ -112,9 +112,21 @@
                         <!--  -->
                         <div class="flex-w flex-m p-l-100 p-t-40 respon7">
                             <div class="flex-m bor9 p-r-10 m-r-11">
-                                <a href="#" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-addwish-detail tooltip100" data-tooltip="Add to Wishlist">
+                                @if(Auth::user()->wishlist->products->contains($product->id))
+                                 <form action="{{ route('user.removeFromWishlist', ['id'=>$product->id]) }}" method="GET">
+                                    @csrf
+                                <button type="submit" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-addwish-detail tooltip100" data-tooltip="Remove from Wishlist">
                                     <i class="zmdi zmdi-favorite"></i>
-                                </a>
+                                </button>
+                                 </form>
+                                 @else
+                                 <form action="{{ route('user.addToWishlist', ['store_id'=>$product->store->id, 'product_id'=>$product->id]) }}" method="POST">
+                                    @csrf
+                                <button type="submit" class="fs-14 cl3 hov-cl1 trans-04 lh-10 p-lr-5 p-tb-2 js-addwish-detail tooltip100" data-tooltip="Add to Wishlist">
+                                    <i class="zmdi zmdi-favorite"></i>
+                                </button>
+                                 </form>
+                                 @endif
                             </div>
                         </div>
                     </div>
