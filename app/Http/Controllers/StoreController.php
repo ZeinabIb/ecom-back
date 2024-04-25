@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Events\BidMade;
 use App\Events\NewOrder;
 use App\Mail\OrderCreatedMail;
 use App\Mail\OrderReceivedMail;
@@ -13,10 +15,13 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\StoreAwaitingReviewNotification;
 use App\Mail\StoreReviewEmail;
 use App\Models\Auction;
+use App\Models\Bid;
 use App\Models\Cart;
 use App\Models\Category;
+use App\Models\Invitation;
 use App\Models\Product;
 use App\Models\User;
+use DateTimeZone;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -238,11 +243,15 @@ class StoreController extends Controller
 
                 //if there's auction option let's make it
                 if($request->auction_status==1){
-                    Auction::create([
+                    $auction = Auction::create([
                         'starting_price' => $request->price,
+                        'current_highest_bid' =>$request->price,
                         'product_id' => $product->id,
-                        'store_id' => $storeId
+                        'store_id' => $storeId,
                     ]);
+
+                    $auction->auction_channel = 'auction_' . $product->id . '_' . $product->store_id;
+                    $auction->save();
                 }
 
                 return redirect()->route('sellers.editStore', ['seller' => auth()->user()->id, 'store' => $store->id]);
@@ -525,6 +534,181 @@ class StoreController extends Controller
         } catch (\Throwable $th) {
             return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
         }
+    }
+
+    public function getAuctions($sellerId, $storeId, $auctionId){
+        try {
+            $auction = Auction::findOrFail($auctionId);
+            if ($auction->store->seller_id != auth()->user()->id) {
+                return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
+            }
+
+            $store = Store::findOrFail($storeId);
+            $seller = $store->seller()->first();
+
+            return view('sellers.auctionDetails')->with(['store' => $store, 'seller' => $seller, 'auction' => $auction]);
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+            return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
+        }
+    }
+
+    public function updateAuctions(Request $request, $sellerId, $storeId, $auctionId){
+        try {
+            $validatedData = $request->validate([
+                'auction_start_time' => 'required|date',
+                'auction_end_time' => 'required|date',
+            ]);
+            $auction = Auction::findOrFail($auctionId);
+            if ($auction->store->seller_id != auth()->user()->id) {
+                return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
+            }
+
+            $auction->auction_start_time = $request->auction_start_time;
+            $auction->auction_end_time = $request->auction_end_time;
+            $auction->save();
+
+            $store = Store::findOrFail($storeId);
+            $seller = $store->seller()->first();
+            // return view('sellers.auctionDetails')->with(['store' => $store, 'seller' => $seller, 'auction' => $auction]);
+            return redirect()->back();
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+            return redirect()->route('sellers.show', ['seller' => auth()->user()->id]);
+        }
+    }
+
+    public function getInvites(){
+        $invites = Auth::user()->auctionInvites;
+        return view('home.invites')->with(['invites'=>$invites]);
+    }
+
+    public function acceptInvite($inviteId){
+        try {
+            $invite = Invitation::findOrFail($inviteId);
+
+        if($invite->buyer_id==Auth::user()->id){
+            $invite->status = "accepted";
+            $invite->save();
+            return redirect()->back();
+        }else{
+            return redirect()->route('home.home');
+        }
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }
+    }
+
+    public function declineInvite($inviteId){
+        try {
+            $invite = Invitation::findOrFail($inviteId);
+
+        if($invite->buyer_id==Auth::user()->id){
+            $invite->status = "declined";
+            $invite->save();
+            return redirect()->back();
+        }else{
+            return redirect()->route('home.home');
+        }
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }  
+    }
+
+    public function auctionEvent($auctionId){
+        $auction = Auction::findOrFail($auctionId)->get()->first();
+        $store = Store::findOrFail($auction->store_id)->get()->first();
+        if((Auth::user()->auctionInvites->first()?Auth::user()->auctionInvites->first()->auction_id:null) == $auctionId || Auth::user()->id == $store->seller_id){
+            return view('home.auction')->with(['auction' => $auction, 'bids' => $auction->bids]);
+        }else{
+            return redirect('/');
+        }
+        
+    }
+
+    public function placeBid(Request $request, $auctionId)
+    {
+        try {
+            $auction = Auction::findOrFail($auctionId);
+
+            // Convert auction start time and end time to Carbon instances
+            $auctionStartTime = Carbon::parse($auction->auction_start_time);
+            $auctionEndTime = Carbon::parse($auction->auction_end_time);
+            
+            // Get the current time
+            $now = Carbon::now();
+            $now->addHours(3);
+            // Compare the current time with the auction start and end times
+            if ($now->lt($auctionStartTime) || $now->gt($auctionEndTime)) {
+                // Auction is not within the active period
+                
+                event(new BidMade($auctionId, Auth::user()->id, -1));
+                return back()->with('error', 'Bidding is only allowed during the active period of the auction.');
+            }
+
+            Bid::create([
+                'bid_amount' => $request->bid_amount,
+                'buyer_id' => Auth::user()->id,
+                'auction_id' => $auctionId
+            ]);
+
+            if($request->bid_amount > $auction->current_highest_bid || $auction->current_highest_bid == null){
+                $auction->current_highest_bid = $request->bid_amount;
+                $auction->save();
+            }
+
+            event(new BidMade($auctionId, Auth::user()->id, $request->bid_amount));
+
+            return back();
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        }  
+    }
+
+    public function closeAuction($auctionId){
+        try {
+            $auction = Auction::findOrFail($auctionId);
+
+            // Convert auction start time and end time to Carbon instances
+            $auctionStartTime = Carbon::parse($auction->auction_start_time);
+            $auctionEndTime = Carbon::parse($auction->auction_end_time);
+
+            // Check if the current time is within the auction start and end dates
+            $now = Carbon::now();
+            $now->addHours(3);
+            
+            
+            if($auction->store->seller->id!=Auth::user()->id){
+                return back();
+            }
+
+            if ($now->gt($auctionStartTime) && $now->lt($auctionEndTime)) {
+                $auction->auction_end_time = $now;
+                $auction->save();
+
+                $order = new Order();
+                $order->buyer_id = $auction->highestBid->user->id;
+                $order->seller_id = $auction->store->seller_id; // Set the seller ID
+                $order->location_lat = "0";
+                $order->location_lng = "0";
+                $order->total_amount = $auction->highestBid->bid_amount; // Initialize total price for this order
+                $order->payment_status = "AUCTION: Cash On Delivery";
+
+                // Save the order
+                $order->save();
+
+                $quantityInCart = 1;
+                $order->products()->attach($auction->product_id, ['quantity' => $quantityInCart]);
+
+                // Save the order
+                $order->save();
+
+                return redirect()->back();
+            }
+            return back();       
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+        } 
     }
 
     // AUCTION - END //
