@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Cart</title>
+	<title>Wish List</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -137,8 +137,154 @@
 	<link rel="stylesheet" type="text/css" href={{ asset('home/css/util.css')}}>
 	<link rel="stylesheet" type="text/css" href={{ asset('home/css/main.css')}}>
 <!--===============================================================================================-->
+<script>
+    "use strict";
+
+    const CONFIGURATION = {
+      "ctaTitle": "Checkout",
+      "mapOptions": {"center":{"lat":37.4221,"lng":-122.0841},"fullscreenControl":true,"mapTypeControl":false,"streetViewControl":true,"zoom":11,"zoomControl":true,"maxZoom":22,"mapId":""},
+      "mapsApiKey": "AIzaSyAxWvBQQy-KxHaFkQXbo0dwPiyRy-rHTP8",
+      "capabilities": {"addressAutocompleteControl":true,"mapDisplayControl":true,"ctaControl":true}
+    };
+
+    const SHORT_NAME_ADDRESS_COMPONENT_TYPES =
+        new Set(['street_number', 'administrative_area_level_1', 'postal_code']);
+
+    const ADDRESS_COMPONENT_TYPES_IN_FORM = [
+      'location',
+      'locality',
+      'administrative_area_level_1',
+      'postal_code',
+      'country',
+    ];
+
+    function getFormInputElement(componentType) {
+      return document.getElementById(`${componentType}-input`);
+    }
+
+    function fillInAddress(place) {
+      function getComponentName(componentType) {
+        for (const component of place.address_components || []) {
+          if (component.types[0] === componentType) {
+            return SHORT_NAME_ADDRESS_COMPONENT_TYPES.has(componentType) ?
+                component.short_name :
+                component.long_name;
+          }
+        }
+        return '';
+      }
+
+      function getComponentText(componentType) {
+        return (componentType === 'location') ?
+            `${getComponentName('street_number')} ${getComponentName('route')}` :
+            getComponentName(componentType);
+      }
+
+      for (const componentType of ADDRESS_COMPONENT_TYPES_IN_FORM) {
+        getFormInputElement(componentType).value = getComponentText(componentType);
+      }
+    }
+
+    function renderAddress(place, map, marker) {
+      if (place.geometry && place.geometry.location) {
+        map.setCenter(place.geometry.location);
+        marker.position = place.geometry.location;
+      } else {
+        marker.position = null;
+      }
+    }
+
+    async function initMap() {
+      const {Map} = google.maps;
+      const {AdvancedMarkerElement} = google.maps.marker;
+      const {Autocomplete} = google.maps.places;
+
+      const mapOptions = CONFIGURATION.mapOptions;
+      mapOptions.mapId = mapOptions.mapId || 'DEMO_MAP_ID';
+      mapOptions.center = mapOptions.center || {lat: 37.4221, lng: -122.0841};
+
+      const map = new Map(document.getElementById('gmp-map'), mapOptions);
+      const marker = new AdvancedMarkerElement({map});
+      const autocomplete = new Autocomplete(getFormInputElement('location'), {
+        fields: ['address_components', 'geometry', 'name'],
+        types: ['address'],
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (!place.geometry) {
+          // User entered the name of a Place that was not suggested and
+          // pressed the Enter key, or the Place Details request failed.
+          window.alert(`No details available for input: '${place.name}'`);
+          return;
+        }
+        renderAddress(place, map, marker);
+        fillInAddress(place);
+      });
+
+      const locationButton = document.createElement("a");
+
+      locationButton.textContent = "Pan to Current Location";
+      locationButton.classList.add("custom-map-control-button");
+      document.querySelector('.panel').appendChild(locationButton);
+
+      locationButton.addEventListener("click", () => {
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              const pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              };
+
+              map.setCenter(pos);
+              marker.position = pos;
+
+              document.getElementById('location_lat_cash').value = pos.lat;
+              document.getElementById('location_lng_cash').value = pos.lng;
+
+              document.getElementById('location_lat_card').value = pos.lat;
+              document.getElementById('location_lng_card').value = pos.lng;
+              
+              console.log("Current Location:", pos);
+            },
+            () => {
+              window.alert("Geolocation failed.");
+            }
+          );
+        } else {
+          // Browser doesn't support Geolocation
+          window.alert("Your browser doesn't support geolocation.");
+        }
+      });
+    }
+  </script>
 </head>
-<body>	
+<body class="animsition">
+    @include('home.header')
+
+	<!-- Cart -->
+	<div class="wrap-header-cart js-panel-cart">
+		<div class="s-full js-hide-cart"></div>
+	</div>
+
+
+	<!-- breadcrumb -->
+	<div class="container">
+		<div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+			<a href="{{ route('home.home') }}" class="stext-109 cl8 hov-cl1 trans-04">
+				Home
+				<i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+			</a>
+
+			<span class="stext-109 cl4">
+				Wish List
+			</span>
+		</div>
+	</div>
+		
+
 	<!-- Shoping Cart -->
 	<div class="bg0 p-t-75 p-b-85">
 		<div class="container">
@@ -151,83 +297,46 @@
 									<th class="column-1">Product</th>
 									<th class="column-2"></th>
 									<th class="column-3">Price</th>
-									<th class="column-4">Quantity</th>
-									<th class="column-5">Total</th>
+									<th class="column-5">Action</th>
 								</tr>
 
                                 @php
                                     $total = 0; // Initialize total variable
                                 @endphp
-                                @foreach (json_decode($products) as $product)
+                                @foreach (Auth::user()->wishlist->products as $productInWishList)
                                 <tr class="table_row">
                                     <td class="column-1">
                                         <div class="how-itemcart1">
-                                            <img src="/products/{{ $product->image_url }}" alt="IMG">
+                                            <img src="/products/{{ $productInWishList->image_url }}" alt="IMG">
                                         </div>
                                     </td>
-                                    <td class="column-2">{{ $product->name }}</td>
-                                    <td class="column-3">$ {{ $product->price }}</td>
-                                    <td class="column-4">{{ $product->pivot->quantity }}</td> <!-- Accessing the quantity from pivot table -->
-                                    <td class="column-5">$ {{ number_format($product->price * $product->pivot->quantity, 2) }}</td>
+                                    <td class="column-2">{{ $productInWishList->name }}</td>
+                                    <td class="column-3">$ {{ $productInWishList->price }}</td>
+                                    <td class="column-6">
+                                       <a href="{{ route('user.removeFromWishlist', ['id'=>$productInWishList->id]) }}" class="btn btn-primary text-white">Remove</a>              
+                                    </td>
                                 </tr>
 
                                 @php
-                                    // Update total by adding the price * quantity of current product
-                                    $total += $product->price * $product->pivot->quantity; // Accessing quantity from pivot table
                                 @endphp
                                 @endforeach
 
 							</table>
 						</div>
 					</div>
+				</div>       
+            </form>
+
+            </form>
+          </div>
 				</div>
-
-				<div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
-					<div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
-						<h4 class="mtext-109 cl2 p-b-30">
-							Cart Totals
-						</h4>
-
-						<div class="flex-w flex-t bor12 p-b-13">
-							<div class="size-208">
-								<span class="stext-110 cl2">
-									Subtotal:
-								</span>
-							</div>
-
-							<div class="size-209">
-								<span class="mtext-110 cl2">
-									$ {{ number_format($total, 2) }}
-								</span>
-							</div>
-						</div>
-
-						<div class="flex-w flex-t p-t-27 p-b-33">
-							<div class="size-208">
-								<span class="mtext-101 cl2">
-									Total:
-								</span>
-							</div>
-
-							<div class="size-209 p-t-1">
-								<span class="mtext-110 cl2">
-									$ {{ number_format($total, 2) }}
-								</span>
-							</div>
-						</div>
-                    </div>
-				</div>
-                @if(Auth::user()->usertype == 'seller')
-                <form method="GET" action="{{ route('sellers.changeOrderStatus', ['id' => $order->id]) }}">
-                    @csrf
-                    <button class="flex-c-m stext-101 cl0 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer" style="padding: 200px 70vh" {{ $order->order_status=="delivered"?"disabled":"" }}>
-                        DELIVERED
-                    </button>
-                </form>
-                @endif
 			</div>
 		</div>
+
+        <div class="panel"></div>
+
 	</div>
+    @include('home.footer')
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAxWvBQQy-KxHaFkQXbo0dwPiyRy-rHTP8&libraries=places,marker&callback=initMap&solution_channel=GMP_QB_addressselection_v2_cABC" async defer></script>
     <!--===============================================================================================-->
 	<script src="/home/vendor/jquery/jquery-3.2.1.min.js"></script>
@@ -336,3 +445,5 @@
 
 </body>
 </html>
+
+

@@ -4,7 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StoreController;
-
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\WishListController;
+use App\Http\Controllers\HomeController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,11 +19,11 @@ use App\Http\Controllers\StoreController;
 */
 use App\Http\Controllers\UserController;
 
-Route::get('/chat-users', [UserController::class, 'index'])->name('chat.users');
+Route::get('/chat-users', [UserController::class, 'index']);
 
 
-Route::get('/', function () {return view('home.home');})->middleware('auth');
-Route::get('/stores', [StoreController::class, 'getAllApprovedStores']);
+Route::get('/', [HomeController::class, 'HomeInfo'])->name('home.home')->middleware('auth');
+Route::get('/stores', [StoreController::class, 'getAllApprovedStores'])->name('store.home');
 Route::get('/stores/search', [StoreController::class, 'getStoresLike'])->name('store.filtered');
 Route::get('/stores/{store_id}', [StoreController::class, 'getProducts'])->name('store.view');
 Route::get('/stores/{store_id}/search', [StoreController::class, 'getProductsLike'])->name('product.filtered');
@@ -45,7 +47,9 @@ Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
 
 Route::get('/order-address', function () {
     return view('order-address');
-});
+})->name('order-address');
+
+
 
 Route::get('/seller-order-address', function () {
     return view('seller-order-address');
@@ -87,10 +91,6 @@ Route::get('/admin/store/{store}/edit', [SellerController::class, 'editStore'])-
 Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 Route::post('/admin/reset-user-password/{user}', [AdminController::class, 'resetUserPassword'])->name('admin.resetUserPassword');
 
-
-
-
-
 Route::put('/admin/store/{store}', [AdminController::class, 'updateStore'])->name('admin.updateStore');
 
 Route::get('/sellers/{seller}', [SellerController::class, 'show'])->name('sellers.show')->middleware('checkSeller');
@@ -110,28 +110,30 @@ Route::delete('/sellers/{seller}/editStore/{store}/deleteAuction/{auction}', [St
 Route::get('/sellers/order/{id}', [SellerController::class, 'viewOrder'])->name('sellers.viewOrder')->middleware('checkSeller');
 Route::get('/sellers/order/{id}/changeOrderStatus', [SellerController::class, 'changeOrderStatus'])->name('sellers.changeOrderStatus')->middleware('checkSeller');
 
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/', function () {
-        return view('home.home');
-    })->name('home.home');
-});
+// Route::middleware([
+//     'auth:sanctum',
+//     config('jetstream.auth_session'),
+//     'verified',
+// ])->group(function () {
+//     Route::get('/', function () {
+//         return view('home.home');
+//     })->name('home.home');
+// });
 
 
 
 
-Route::get('/pusher', function(){
-return view('pusher');
-});
+Route::get('/pusher', function(){return view('pusher');})->name('chat.users');
 
-Route::get('/pusher2', function(){
-    return view('pusher2');
-    });
+Route::get('/pusher2', function(){return view('pusher2');});
 
 
 
 Route::get('/sendPusher', [PusherController::class,"sendPusher"]);
 Route::post('/sendPusher', [PusherController::class, "sendPusher"]);
+
+Route::get('/getBuyerOrders', [OrderController::class, "getBuyerOrders"])->name('home.getBuyerOrders');
+
+Route::post('/stores/{store_id}/products/{product_id}/addToWishlist', [WishListController::class, 'addProductToWishlist'])->name('user.addToWishlist');
+Route::get('/wishlist/{id}', [WishListController::class, 'removeProductFromWishlist'])->name('user.removeFromWishlist');
+Route::get('/wishlist', [WishListController::class, 'getWishlist'])->name('user.viewWishlist')->middleware('auth');
