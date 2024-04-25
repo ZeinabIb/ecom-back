@@ -11,15 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('invitations', function (Blueprint $table) {
+        Schema::create('wishlists', function (Blueprint $table) {
             $table->id();
-            $table->string('status')->default('pending');
-            $table->unsignedBigInteger('auction_id');
             $table->unsignedBigInteger('buyer_id');
             $table->timestamps();
 
-            $table->primary(['invitation_id', 'auction_id', 'buyer_id']);
-            $table->foreign('auction_id')->references('id')->on('auctions')->onDelete('cascade');
             $table->foreign('buyer_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
@@ -29,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('invitations');
+        Schema::dropIfExists('wishlists');
     }
 };

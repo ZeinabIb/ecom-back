@@ -41,7 +41,7 @@ class PusherController extends Controller
             'message' => $message,
             'type' => 'sender'
         ];
-        event(new SendNotification($data, 'my-channel', 'my-event'));
+        event(new SendNotification($data, 'my-channel1', 'my-event1'));
         return response()->json(['status' => 'success']);
     }
 }

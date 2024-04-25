@@ -3,41 +3,30 @@
     <div class="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <nav class="limiter-menu-desktop container">
-            <a href="#" class="logo">
-                <img src="images/icons/logo-01.png" alt="IMG-LOGO">
+            <a href="/" class="logo">
+                <img src="/home/images/icons/logo-01.png" alt="IMG-LOGO">
             </a>
 
             <!-- Menu desktop -->
             <div class="menu-desktop">
                 <ul class="main-menu">
                     <li class="active-menu">
-                        <a href="index.html">Home</a>
-                        <ul class="sub-menu">
-                            <li><a href="index.html">Homepage 1</a></li>
-                            <li><a href="home-02.html">Homepage 2</a></li>
-                            <li><a href="home-03.html">Homepage 3</a></li>
-                        </ul>
+                        <a href="/">Home</a>
                     </li>
 
                     <li>
-                        <a href="product.html">Shop</a>
+                        <a href="{{ route('store.home') }}">Stores</a>
                     </li>
 
-                    <li class="label1" data-label1="hot">
-                        <a href="shoping-cart.html">Features</a>
-                    </li>
-
+                    @if(Auth::user()->usertype == "buyer")
                     <li>
-                        <a href="blog.html">Blog</a>
+                        <a href="{{ route('home.getBuyerOrders')}}">Orders</a>
                     </li>
-
-                    <li>
-                        <a href="about.html">About</a>
-                    </li>
-
-                    <li>
-                        <a href="contact.html">Contact</a>
-                    </li>
+                    
+                    {{-- <li>
+                        <a href="{{ route('/') }}">Invitations</a>
+                    </li> --}}
+                    @endif
                 </ul>
             </div>
             <div class="wrap-icon-header flex-w flex-r-m">
@@ -46,7 +35,7 @@
                     <a href="{{ route('user.viewCart') }}"><i class="zmdi zmdi-shopping-cart"></i></a>
                 </div>
 
-                <a href="#" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti" data-notify="09">
+                <a href="{{ route('user.viewWishlist') }}" class="dis-block icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti" data-notify="{{ count(auth()->user()->wishlist->products) }}">
                     <i class="zmdi zmdi-favorite-outline"></i>
                 </a>
             </div>
@@ -153,6 +142,14 @@
                                 </x-dropdown-link>
                             @endif
 
+                            
+                            
+                            @if(Auth::user()->usertype == 'seller')
+                            <x-dropdown-link href="{{ route('sellers.show', ['seller'=> Auth::user()->id]) }}">
+                                {{ __('Store') }}
+                            </x-dropdown-link>
+                            @endif
+
                             <div class="border-t border-gray-200"></div>
 
                             <!-- Authentication -->
@@ -164,6 +161,8 @@
                                     {{ __('Log Out') }}
                                 </x-dropdown-link>
                             </form>
+
+                            
                         </x-slot>
                     </x-dropdown>
                 </div>

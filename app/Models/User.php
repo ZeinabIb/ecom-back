@@ -23,6 +23,15 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Cart::class, 'buyer_id');
     }
 
+    public function auctionInvites()
+    {
+        return $this->hasMany(Invitation::class, 'buyer_id');
+    }
+    public function wishlist()
+    {
+        return $this->hasOne(Wishlist::class, 'buyer_id');
+    }
+
     /**
      * The attributes that are mass assignable.
      *
