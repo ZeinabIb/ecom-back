@@ -142,8 +142,10 @@ Route::get('/pusher2', function(){return view('pusher2');});
 Route::get('/sendPusher', [PusherController::class,"sendPusher"]);
 Route::post('/sendPusher', [PusherController::class, "sendPusher"]);
 
+Route::middleware('admin')->group(function () {
+    Route::get('/admin', [AdminController::class, "index"])->name('admin.index');
+});
 
-Route::get('/admin', [AdminController::class, "index"])->name('admin.index');
 
 Route::get('/admin/pending', [AdminController::class, "pendingStores"])->name('admin.pendingStores');
 
