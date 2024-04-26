@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\StoreReviewEmail;
 use Illuminate\Http\Request;
 use App\Models\Store;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 { public function index()
@@ -38,14 +40,20 @@ class AdminController extends Controller
 public function acceptStore($id)
 {
     $store = Store::findOrFail($id);
+    $seller_email = User::find($store->seller_id);
     $store->update(['store_status' => 'Active']);
+    // Send email notification to seller
+    Mail::to($seller_email)->send(new StoreReviewEmail('approved', $store->name));
 
     return redirect()->back()->with('success', 'Store accepted successfully');
 }
 public function rejectStore($id)
 {
     $store = Store::findOrFail($id);
+    $seller_email = User::find($store->seller_id);
     $store->delete();
+    // Send email notification to seller
+    Mail::to($seller_email)->send(new StoreReviewEmail('rejected', $store->name));
 
     return redirect()->back()->with('success', 'Store deleted successfully');
 }

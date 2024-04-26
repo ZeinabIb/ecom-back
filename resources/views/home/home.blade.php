@@ -109,14 +109,14 @@
 				<!-- Search product -->
 				<div class="dis-none panel-search w-full p-t-10 p-b-15">
 					<div class="bor8 dis-flex p-l-15">
-						<form class="bor8 dis-flex p-l-15" action="{{ route('product.filtered', ['store_id' => $all_products[0]->store->id]) }}" method="GET">
+						{{-- <form class="bor8 dis-flex p-l-15" action="{{ route('product.filtered', ['store_id' => $all_products[0]->store->id]) }}" method="GET">
 							@csrf
 							<button type="submit" class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
 								<i class="zmdi zmdi-search"></i>
 							</button>
 
 							<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search_product" id="search_product" placeholder="Search">
-						</form>
+						</form> --}}
 					</div>
 				</div>
 			</div>
@@ -128,7 +128,7 @@
                         <!-- Block2 -->
                         <div class="block2">
                             <div class="block2-pic hov-img0">
-                                <img src="/products/{{ $product->image_url }}" alt="IMG-PRODUCT" height="250px" style="object-fit: cover; width: 100%; height: 250px;">
+                                <img src="/products/{{ $product->image_url }}" alt="IMG-PRODUCT" height="350px" style="object-fit:contain; width: 100%; height: 250px;">
 								<a href="{{ route('home.viewProduct', ['store_id'=>$product->store->id, 'product_id'=>$product->id]) }}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
                                     Quick View
                                 </a>
@@ -145,7 +145,7 @@
                                 </div>
 
                                 <div class="block2-txt-child2 flex-r p-t-3">
-                                     @if(Auth::user()->wishlist->products->contains($product->id))
+                                     @if(isset(Auth::user()->wishlist->products) && Auth::user()->wishlist->products->contains($product->id))
                                  <form action="{{ route('user.removeFromWishlist', ['id'=>$product->id]) }}" method="GET">
                                     @csrf
                                 <button type="submit" class="btn-addwish-b2 dis-block pos-relative" data-tooltip="Remove from Wishlist">

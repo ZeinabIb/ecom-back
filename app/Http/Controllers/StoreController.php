@@ -683,6 +683,10 @@ class StoreController extends Controller
             }
 
             if ($now->gt($auctionStartTime) && $now->lt($auctionEndTime)) {
+                $product = $auction->product;
+                $product->price = $auction->current_highest_bid;
+                $product->save();
+                
                 $auction->auction_end_time = $now;
                 $auction->save();
 
