@@ -714,6 +714,17 @@ class StoreController extends Controller
             dd($th->getMessage());
         } 
     }
+    
+     public function getUserAuction(){
+            $invites = Auth::user()->auctionInvites()->where('status', 'accepted')->get();
+            $acceptedInvitesArray = $invites->toArray();
+            $auctions = [];
+            if($acceptedInvitesArray){
+                $invitess = $invites;
+            }
+
+            return view('home.get_user_auctions', compact('invitess'));
+    }
 
     // AUCTION - END //
 }

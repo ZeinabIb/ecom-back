@@ -102,22 +102,8 @@
 			<div class="flex-w flex-sb-m p-b-52 p-t-4">
 				<div class="flex-w flex-l-m filter-tope-group m-tb-10">
 					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
-						All Products
+						Top Products
 					</button>
-				</div>
-
-				<!-- Search product -->
-				<div class="dis-none panel-search w-full p-t-10 p-b-15">
-					<div class="bor8 dis-flex p-l-15">
-						{{-- <form class="bor8 dis-flex p-l-15" action="{{ route('product.filtered', ['store_id' => $all_products[0]->store->id]) }}" method="GET">
-							@csrf
-							<button type="submit" class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-								<i class="zmdi zmdi-search"></i>
-							</button>
-
-							<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search_product" id="search_product" placeholder="Search">
-						</form> --}}
-					</div>
 				</div>
 			</div>
 
