@@ -31,6 +31,12 @@ Route::get('/stores/{store_id}/products/{product_id}', [StoreController::class, 
 Route::post('/stores/{store_id}/products/{product_id}/addToCart', [StoreController::class, 'addProductToCart'])->name('user.addToCart');
 Route::get('/cart/{id}', [StoreController::class, 'removeProductFromCart'])->name('user.removeFromCart');
 Route::get('/cart', [StoreController::class, 'getCart'])->name('user.viewCart')->middleware('auth');
+Route::get('/invites', [StoreController::class, 'getInvites'])->name('user.viewInvites')->middleware('auth');
+Route::get('/invites/{id}/accept', [StoreController::class, 'acceptInvite'])->name('home.acceptInvite')->middleware('auth');
+Route::get('/invites/{id}/decline', [StoreController::class, 'declineInvite'])->name('home.declineInvite')->middleware('auth');
+Route::post('/auction/{id}', [StoreController::class, 'placeBid'])->name('home.placeBid')->middleware('auth');
+Route::get('/auction/{id}', [StoreController::class, 'auctionEvent'])->name('home.enterAuction')->middleware('auth');
+Route::get('/auction/{id}/close', [StoreController::class, 'closeAuction'])->name('home.closeAuction')->middleware('checkSeller');
 
 Route::post('/cart/stripe', [StoreController::class, 'stripe'])->name('home.stripePayement')->middleware('auth');
 Route::post('/cart/stripe/submit', [StoreController::class,'stripePost'])->name('home.stripePayementSubmit');
@@ -55,9 +61,9 @@ Route::get('/seller-order-address', function () {
     return view('seller-order-address');
 });
 
-Route::get('/chat', 'PusherController@index');
+Route::get('/chat', 'App\Http\Controllers\PusherController@index');
 // Route::get('/users', 'PusherController@showUserList');
-Route::get('/chat/{user}', 'PusherController@startChatWithUser');
+Route::get('/chat/{user}', 'App\Http\Controllers\PusherController@startChatWithUser');
 
 Route::post('/broadcast','App\Http\Controllers\PusherController@broadcast');
 Route::post('/receive','App\Http\Controllers\PusherController@receive');
@@ -88,7 +94,7 @@ use App\Http\Controllers\SellerController;
 use App\Models\Store;
 
 Route::get('/admin/store/{store}/edit', [SellerController::class, 'editStore'])->name('admin.editStore');
-Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+//  Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 Route::post('/admin/reset-user-password/{user}', [AdminController::class, 'resetUserPassword'])->name('admin.resetUserPassword');
 
 Route::put('/admin/store/{store}', [AdminController::class, 'updateStore'])->name('admin.updateStore');
@@ -107,6 +113,10 @@ Route::get('/sellers/{seller}/editStore/{store}/deleteProduct/{product}', [Store
 Route::get('/sellers/{seller}/editStore/{store}/editproduct/{product}', [SellerController::class, 'showEditProductForm'])->name('sellers.editProduct')->middleware('checkSeller');
 Route::put('/sellers/{seller}/editStore/{store}/editproduct/{product}', [StoreController::class, 'editProduct'])->name('sellers.submitEditProduct')->middleware('checkSeller');
 Route::delete('/sellers/{seller}/editStore/{store}/deleteAuction/{auction}', [StoreController::class, 'deleteAuction'])->name('sellers.deleteAuction')->middleware('checkSeller');
+Route::get('/sellers/{seller}/editStore/{store}/auctions/{auction}', [StoreController::class, 'getAuctions'])->name('sellers.auctionDetails')->middleware('checkSeller');
+Route::put('/sellers/{seller}/editStore/{store}/auctions/{auction}/update', [StoreController::class, 'updateAuctions'])->name('sellers.updateAuction')->middleware('checkSeller');
+Route::get('/sellers/{seller}/editStore/{store}/auctions/{auction}/invite', [SellerController::class, 'showInviteBuyerToAuctionForm'])->name('sellers.inviteBuyerToAuction')->middleware('checkSeller');
+Route::post('/sellers/{seller}/editStore/{store}/auctions/{auction}/invite', [SellerController::class, 'inviteBuyerToAuction'])->name('sellers.submitInviteBuyerToAuction')->middleware('checkSeller');
 Route::get('/sellers/order/{id}', [SellerController::class, 'viewOrder'])->name('sellers.viewOrder')->middleware('checkSeller');
 Route::get('/sellers/order/{id}/changeOrderStatus', [SellerController::class, 'changeOrderStatus'])->name('sellers.changeOrderStatus')->middleware('checkSeller');
 
@@ -132,6 +142,23 @@ Route::get('/pusher2', function(){return view('pusher2');});
 Route::get('/sendPusher', [PusherController::class,"sendPusher"]);
 Route::post('/sendPusher', [PusherController::class, "sendPusher"]);
 
+Route::middleware('admin')->group(function () {
+    Route::get('/admin', [AdminController::class, "index"])->name('admin.index');
+});
+
+
+Route::get('/admin/pending', [AdminController::class, "pendingStores"])->name('admin.pendingStores');
+
+Route::post('/admin/store/{id}/accept', [AdminController::class, "acceptStore"])->name('admin.acceptStore');
+Route::post('/admin/store/{id}/reject', [AdminController::class, "rejectStore"])->name('admin.rejectStore');
+Route::put('/admin/store/{store}', [AdminController::class, "toggleStoreStatus"])->name('admin.toggleStoreStatus');
+Route::put('/admin/store/{store}', [AdminController::class, "toggleStoreStatus"])->name('admin.toggleStoreStatus');
+
+
+
+// Route::get('/admin', 'AdminController@pendingStores')->name('admin.pendingStores');
+// Route::post('/admin/store/{id}/accept', 'AdminController@acceptStore')->name('admin.acceptStore');
+// Route::post('/admin/store/{id}/reject', 'AdminController@rejectStore')->name('admin.rejectStore');
 Route::get('/getBuyerOrders', [OrderController::class, "getBuyerOrders"])->name('home.getBuyerOrders');
 
 Route::post('/stores/{store_id}/products/{product_id}/addToWishlist', [WishListController::class, 'addProductToWishlist'])->name('user.addToWishlist');

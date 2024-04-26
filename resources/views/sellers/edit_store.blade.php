@@ -133,7 +133,7 @@
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-primary" onclick="event.stopPropagation();">Delete</button>
                                     </form>
-                                    <a href="" class="btn btn-primary" onclick="event.stopPropagation();">Edit</a>
+                                    <a href="{{ route('sellers.auctionDetails', ['seller' => $seller->id, 'store' => $store->id, 'auction' => $auction->id]) }}" class="btn btn-primary" onclick="event.stopPropagation();">Edit</a>
                                 </td>
                             </tr>
                         @endforeach

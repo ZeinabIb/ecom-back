@@ -49,17 +49,17 @@
                         @endif
                     </td>
                     <td>
-                        <form action="{{ route('admin.toggleStoreStatus', $store->id) }}" method="POST">
-                            @csrf
-                            @method('PUT')
-                            <button type="submit" class="btn btn-sm btn-primary">
-                                @if ($store->store_status == 'Active')
-                                    Deactivate
-                                @else
-                                    Activate
-                                @endif
-                            </button>
-                        </form>
+                    <form action="{{ route('admin.toggleStoreStatus', $store->id) }}" method="POST">
+    @csrf
+    @method('PUT')
+    <button type="submit" class="btn btn-sm btn-primary">
+        @if ($store->store_status == 'Active')
+            Deactivate
+        @else
+            Activate
+        @endif
+    </button>
+</form>
                     </td>
                 </tr>
                 @endforeach
@@ -121,6 +121,40 @@
     </div>
     @endif
     </div>
+
+    <h1 class="mt-3">Pending Stores</h1>
+
+<div class="table-responsive mt-3">
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Details</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach ($pendingStores as $store)
+
+            <tr>
+                <td>{{ $store->id }}</td>
+                <td>{{ $store->name }}</td>
+                <td>{{ $store->details }}</td>
+                <td>
+                    <form action="{{ route('admin.acceptStore', $store->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-success">Accept</button>
+                    </form>
+                    <form action="{{ route('admin.rejectStore', $store->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
 </div>
 <link rel="stylesheet" href="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css">
 <script src="https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js"></script>

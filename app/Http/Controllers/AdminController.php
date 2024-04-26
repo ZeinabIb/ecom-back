@@ -10,11 +10,24 @@ use Illuminate\Support\Facades\Hash;
 class AdminController extends Controller
 { public function index()
     {
-        $stores = Store::all();
+        $pendingStores = Store::where('store_status', 'pending')->get();
+        $stores = Store::where('store_status', '!=', 'pending')->get();
         $users = User::all();
 
-        return view('admin', ['stores' => $stores, 'users' => $users]);
+        return view('admin', ['pendingStores' => $pendingStores, 'stores' => $stores, 'users' => $users]);
     }
+
+
+    public function pendingStores()
+    {
+        $pendingStores = Store::where('store_status', 'pending')->get();
+        $stores = Store::where('store_status', '!=', 'pending')->get(); 
+        $users = User::all();
+
+        return view('admin', ['pendingStores' => $pendingStores, 'stores' => $stores, 'users' => $users]);
+
+    }
+
 
     public function getAllUsers()
 {
@@ -22,12 +35,30 @@ class AdminController extends Controller
     return view('admin', ['users' => $users]);
 }
 
+public function acceptStore($id)
+{
+    $store = Store::findOrFail($id);
+    $store->update(['store_status' => 'Active']);
+
+    return redirect()->back()->with('success', 'Store accepted successfully');
+}
+public function rejectStore($id)
+{
+    $store = Store::findOrFail($id);
+    $store->delete();
+
+    return redirect()->back()->with('success', 'Store deleted successfully');
+}
+
+
+
+
+
+
     public function toggleStoreStatus(Request $request, Store $store)
     {
-
         $store->store_status = $store->store_status === 'Active' ? 'Inactive' : 'Active';
         $store->save();
-
 
         return redirect()->route('admin.index');
     }
