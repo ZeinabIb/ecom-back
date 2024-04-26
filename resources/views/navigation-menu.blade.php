@@ -30,6 +30,48 @@
             </div>
             <div class="wrap-icon-header flex-w flex-r-m">
 
+                {{-- <form method="PUT" action="{{ route('home.changecurrency') }}"> --}}
+                 <div class="flex items-center">
+                <div class="form-group mr-4">
+                    <select id="currency" name="currency">
+                        <option value="USD"{{ old('currency', $user->currency ?? '') == 'USD' ? ' selected' : '' }}>USD</option>
+                        <option value="EUR"{{ old('currency', $user->currency ?? '') == 'EUR' ? ' selected' : '' }}>EUR</option>
+                        <option value="GBP"{{ old('currency', $user->currency ?? '') == 'GBP' ? ' selected' : '' }}>GBP</option>
+                        <option value="LBP"{{ old('currency', $user->currency ?? '') == 'LBP' ? ' selected' : '' }}>LBP</option>
+                        <option value="KWD"{{ old('currency', $user->currency ?? '') == 'KWD' ? ' selected' : '' }}>KWD</option>
+                    </select>
+                </div>
+                <script>
+                // Add event listener to the select element
+                document.getElementById('currency').addEventListener('change', function() {
+                    // Get the selected value
+                    var selectedCurrency = this.value;
+                    
+                    // Redirect the user to the appropriate route based on the selected currency
+                    switch(selectedCurrency) {
+                        case 'USD':
+                            window.location.href = "{{ route('home.changecurrency') }}?currency=USD";
+                            break;
+                        case 'EUR':
+                            window.location.href = "{{ route('home.changecurrency') }}?currency=EUR";
+                            break;
+                        case 'GBP':
+                            window.location.href = "{{ route('home.changecurrency') }}?currency=GBP";
+                            break;
+                        case 'LBP':
+                            window.location.href = "{{ route('home.changecurrency') }}?currency=LBP";
+                            break;
+                        case 'KWD':
+                            window.location.href = "{{ route('home.changecurrency') }}?currency=KWD";
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            </script>
+            {{-- </form> --}}
+
+
                 <div class="icon-header-item cl2 hov-cl1 trans-04 p-l-22 p-r-11 icon-header-noti js-show-cart" data-notify="{{ count(auth()->user()->cart->products) }}">
                     <a href="{{ route('user.viewCart') }}"><i class="zmdi zmdi-shopping-cart"></i></a>
                 </div>
