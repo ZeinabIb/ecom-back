@@ -37,6 +37,8 @@ Route::get('/invites/{id}/decline', [StoreController::class, 'declineInvite'])->
 Route::post('/auction/{id}', [StoreController::class, 'placeBid'])->name('home.placeBid')->middleware('auth');
 Route::get('/auction/{id}', [StoreController::class, 'auctionEvent'])->name('home.enterAuction')->middleware('auth');
 Route::get('/auction/{id}/close', [StoreController::class, 'closeAuction'])->name('home.closeAuction')->middleware('checkSeller');
+Route::get('/auction', [StoreController::class, 'getUserAuction'])->name('home.getUserAuctions')->middleware('auth');
+
 
 Route::post('/cart/stripe', [StoreController::class, 'stripe'])->name('home.stripePayement')->middleware('auth');
 Route::post('/cart/stripe/submit', [StoreController::class,'stripePost'])->name('home.stripePayementSubmit');

@@ -1,9 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Home</title>
+	<title>Auctions</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+          margin: 0 auto;
+        }
+  
+        .sb-title {
+          position: relative;
+          top: -12px;
+          font-family: Roboto, sans-serif;
+          font-weight: 500;
+        }
+  
+        .sb-title-icon {
+          position: relative;
+          top: -5px;
+        }
+  
+        .card-container {
+          display: flex;
+          height: 500px;
+          margin: 0 auto;
+          margin-top: 10px;
+        }
+  
+        .panel {
+          background: white;
+          width: 300px;
+          padding: 20px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-around;
+        }
+  
+        .half-input-container {
+          display: flex;
+          justify-content: space-between;
+        }
+  
+        .half-input {
+          max-width: 120px;
+        }
+  
+        .map {
+          width: 100%;
+        }
+  
+        h2 {
+          margin: 0;
+          font-family: Roboto, sans-serif;
+        }
+  
+        input {
+          height: 30px;
+        }
+  
+        input {
+          border: 0;
+          border-bottom: 1px solid black;
+          font-size: 14px;
+          font-family: Roboto, sans-serif;
+          font-style: normal;
+          font-weight: normal;
+        }
+  
+        input:focus::placeholder {
+          color: white;
+        }
+  
+        .button-cta {
+          align-self: start;
+          background-color: #1976d2;
+          border: 0;
+          border-radius: 21px;
+          color: white;
+          cursor: pointer;
+          font-family: "Google Sans Text", sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          line-height: 27px;
+          padding: 3.5px 10.5px;
+        }
+  
+        .custom-map-control-button {
+          align-self: start;
+          background-color: #1976d2;
+          border: 0;
+          border-radius: 21px;
+          color: white;
+          cursor: pointer;
+          font-family: "Google Sans Text", sans-serif;
+          font-size: 14px;
+          font-weight: 500;
+          line-height: 27px;
+          padding: 3.5px 10.5px;
+          margin-top: 10px;
+        }
+  
+        .custom-map-control-button:hover {
+          background: rgb(50, 100, 200);
+        }
+      </style>
 <!--===============================================================================================-->
 	<link rel="icon" type="image/png" href="/images/icons/favicon.png"/>
 <!--===============================================================================================-->
@@ -37,96 +139,81 @@
 </head>
 <body class="animsition">
     @include('home.header')
+
 	<!-- Cart -->
 	<div class="wrap-header-cart js-panel-cart">
 		<div class="s-full js-hide-cart"></div>
-
-		<div class="header-cart flex-col-l p-l-65 p-r-25">
-			<div class="header-cart-title flex-w flex-sb-m p-b-8">
-				<span class="mtext-103 cl2">
-					Your Cart
-				</span>
-
-				<div class="fs-35 lh-10 cl2 p-lr-5 pointer hov-cl1 trans-04 js-hide-cart">
-					<i class="zmdi zmdi-close"></i>
-				</div>
-			</div>
-
-		</div>
 	</div>
 
 
-	<!-- Product -->
-	<div class="bg0 m-t-23 p-b-140">
-		<div class="container">
-			<div class="flex-w flex-sb-m p-b-52">
-				<div class="flex-w flex-l-m filter-tope-group m-tb-10">
-					<button class="stext-106 cl6 hov1 bor3 trans-04 m-r-32 m-tb-5 how-active1" data-filter="*">
-						All Stores
-					</button>
-				</div>
+	<!-- breadcrumb -->
+	<div class="container">
+		<div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
+			<a href="{{ route('home.home') }}" class="stext-109 cl8 hov-cl1 trans-04">
+				Home
+				<i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
+			</a>
 
-				<div class="flex-w flex-c-m m-tb-10">
-					<div class="flex-c-m stext-106 cl6 size-105 bor4 pointer hov-btn3 trans-04 m-tb-4 js-show-search">
-						<i class="icon-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-search"></i>
-						<i class="icon-close-search cl2 m-r-6 fs-15 trans-04 zmdi zmdi-close dis-none"></i>
-						Search
-					</div>
-				</div>
+			<span class="stext-109 cl4">
+				Auctions
+			</span>
+		</div>
+	</div>
+		
 
-				<!-- Search product -->
-				<div class="dis-none panel-search w-full p-t-10 p-b-15">
-					<div class="bor8 dis-flex p-l-15">
-						<form class="bor8 dis-flex p-l-15" action="{{ route('store.filtered') }}" method="GET">
-							@csrf
-							<button class="size-113 flex-c-m fs-16 cl2 hov-cl1 trans-04">
-								<i class="zmdi zmdi-search"></i>
-							</button>
-
-							<input class="mtext-107 cl2 size-114 plh2 p-r-15" type="text" name="search_store" id="search_store" placeholder="Search">
-						</form>
-					</div>
-				</div>
-			</div>
-
-			<!-- Banner -->
-	<div class="sec-banner bg0 p-t-80 p-b-50">
+	<!-- Shoping Cart -->
+	<div class="bg0 p-t-75 p-b-85">
 		<div class="container">
 			<div class="row">
-                @foreach ($all_stores as $store)
-                    <div class="col-md-6 col-xl-4 p-b-30 m-lr-auto">
-                        <!-- Block1 -->
-                        <div class="block1 wrap-pic-w">
-                            <img src="/images/store-clipart.jpg" alt="IMG-BANNER">
+				<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
+					<div class="m-l-25 m-r--38 m-lr-0-xl">
+						<div class="wrap-table-shopping-cart">
+							<table class="table-shopping-cart">
+								<tr class="table_head">
+									<th class="column-1">Product</th>
+									<th class="column-2">Name</th>
+									<th class="column-3">Store</th>
+									<th class="column-5">Action</th>
+								</tr>
 
-                            <a href="{{ route('store.view', ['store_id'=>$store->id]) }}" class="block1-txt ab-t-l s-full flex-col-l-sb p-lr-38 p-tb-34 trans-03 respon3">
-                                <div class="block1-txt-child1 flex-col-l">
-                                    <span class="block1-name ltext-102 trans-04 p-b-8">
-                                       {{ $store->name }}
-                                    </span>
+                                @php
+                                    
+                                @endphp
+                                @foreach ($invitess as $auction)
+                                <tr class="table_row">
+                                    <td class="column-1">
+                                        <div class="how-itemcart1">
+                                            <img src="/products/{{ $auction->auction->product->image_url }}" alt="IMG">
+                                        </div>
+                                    </td>
+                                    <td class="column-2">{{ $auction->auction->product->name }}</td>
+                                    <td class="column-3">{{ $auction->auction->store->name }}</td>
+                                    <td class="column-6">
+                                       <a href="{{ route('home.enterAuction', ['id'=>$auction->auction->id]) }}" class="btn btn-primary text-white">Enter</a>              
+                                    </td>
+                                </tr>
 
-                                    <span class="block1-info stext-102 trans-04">
-                                        {{ $store->details }}
-                                    </span>
-                                </div>
+                                @php
+                                @endphp
+                                @endforeach
 
-                                <div class="block1-txt-child2 p-b-4 trans-05">
-                                    <div class="block1-link stext-101 cl0 trans-09">
-                                        Shop Now
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-                @endforeach
+							</table>
+						</div>
+					</div>
+				</div>       
+            </form>
+
+            </form>
+          </div>
+				</div>
 			</div>
 		</div>
-	</div>
 
-		</div>
+        <div class="panel"></div>
+
 	</div>
     @include('home.footer')
-    <!--===============================================================================================-->
+    
 	<script src="/home/vendor/jquery/jquery-3.2.1.min.js"></script>
     <!--===============================================================================================-->
         <script src="/home/vendor/animsition/js/animsition.min.js"></script>
