@@ -11,10 +11,10 @@ class AdminCheckMiddleware
     public function handle(Request $request, Closure $next)
     {
 
-        if ($request->user() && $request->user()->isAdmin()) {
+        if ($request->user() && $request->user()->usertype=='admin') {
             return $next($request);
         }
 
-        return redirect()->route('home')->with('error', 'You do not have permission to access this page.');
+        return redirect()->route('home.home')->with('error', 'You do not have permission to access this page.');
     }
 }

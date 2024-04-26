@@ -100,7 +100,7 @@
                         <!-- Block2 -->
                         <div class="block2">
                             <div class="block2-pic hov-img0">
-                                <img src="/products/{{ $product->image_url }}" alt="IMG-PRODUCT" height="250px" style="object-fit: cover; width: 100%; height: 250px;">
+                                <img src="/products/{{ $product->image_url }}" alt="IMG-PRODUCT" height="350px" style="object-fit:contain; width: 100%; height: 250px;">
 								<a href="{{ route('home.viewProduct', ['store_id'=>$product->store->id, 'product_id'=>$product->id]) }}" class="block2-btn flex-c-m stext-103 cl2 size-102 bg0 bor2 hov-btn1 p-lr-15 trans-04">
                                     Quick View
                                 </a>
@@ -112,7 +112,7 @@
                                         {{ $product->name }}
                                     </a>
                                     <span class="stext-105 cl3">
-                                        ${{ $product->price }}
+                                        ${{ number_format($product->price, 2) }}
                                     </span>
                                 </div>
 

@@ -88,18 +88,9 @@ use App\Http\Controllers\PusherController;
 Route::get('/fetch-messages/{userId}', [UserController::class, 'fetchMessages']);
 
 ////////////////////////////
-Route::get('/admin/users', [UserController::class, 'getAllUsers'])->name('admin');
-Route::post('/admin/users/reset-password/{user}', [AdminController::class, 'resetPassword'])->name('admin.resetPassword');
 
-Route::put('/admin/stores/{store}', [AdminController::class, 'toggleStoreStatus'])->name('admin.toggleStoreStatus');
 use App\Http\Controllers\SellerController;
 use App\Models\Store;
-
-Route::get('/admin/store/{store}/edit', [SellerController::class, 'editStore'])->name('admin.editStore');
-//  Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
-Route::post('/admin/reset-user-password/{user}', [AdminController::class, 'resetUserPassword'])->name('admin.resetUserPassword');
-
-Route::put('/admin/store/{store}', [AdminController::class, 'updateStore'])->name('admin.updateStore');
 
 Route::get('/sellers/{seller}', [SellerController::class, 'show'])->name('sellers.show')->middleware('checkSeller');
 Route::get('/sellers/{seller}/createStore', [SellerController::class, 'showAddStoreForm'])->name('sellers.createStore')->middleware('checkSeller');
@@ -146,21 +137,20 @@ Route::post('/sendPusher', [PusherController::class, "sendPusher"]);
 
 Route::middleware('admin')->group(function () {
     Route::get('/admin', [AdminController::class, "index"])->name('admin.index');
+    Route::get('/admin/pending', [AdminController::class, "pendingStores"])->name('admin.pendingStores');
+    Route::post('/admin/store/{id}/accept', [AdminController::class, "acceptStore"])->name('admin.acceptStore');
+    Route::post('/admin/store/{id}/reject', [AdminController::class, "rejectStore"])->name('admin.rejectStore');
+    Route::put('/admin/store/{store}', [AdminController::class, "toggleStoreStatus"])->name('admin.toggleStoreStatus');
+    Route::put('/admin/store/{store}', [AdminController::class, "toggleStoreStatus"])->name('admin.toggleStoreStatus');
+    Route::get('/admin/store/{store}/edit', [SellerController::class, 'editStore'])->name('admin.editStore');
+    //  Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+    Route::post('/admin/reset-user-password/{user}', [AdminController::class, 'resetUserPassword'])->name('admin.resetUserPassword');
+    Route::put('/admin/store/{store}', [AdminController::class, 'updateStore'])->name('admin.updateStore');
+    Route::put('/admin/stores/{store}', [AdminController::class, 'toggleStoreStatus'])->name('admin.toggleStoreStatus');
+    Route::get('/admin/users', [UserController::class, 'getAllUsers'])->name('admin');
+    Route::post('/admin/users/reset-password/{user}', [AdminController::class, 'resetPassword'])->name('admin.resetPassword');
 });
 
-
-Route::get('/admin/pending', [AdminController::class, "pendingStores"])->name('admin.pendingStores');
-
-Route::post('/admin/store/{id}/accept', [AdminController::class, "acceptStore"])->name('admin.acceptStore');
-Route::post('/admin/store/{id}/reject', [AdminController::class, "rejectStore"])->name('admin.rejectStore');
-Route::put('/admin/store/{store}', [AdminController::class, "toggleStoreStatus"])->name('admin.toggleStoreStatus');
-Route::put('/admin/store/{store}', [AdminController::class, "toggleStoreStatus"])->name('admin.toggleStoreStatus');
-
-
-
-// Route::get('/admin', 'AdminController@pendingStores')->name('admin.pendingStores');
-// Route::post('/admin/store/{id}/accept', 'AdminController@acceptStore')->name('admin.acceptStore');
-// Route::post('/admin/store/{id}/reject', 'AdminController@rejectStore')->name('admin.rejectStore');
 Route::get('/getBuyerOrders', [OrderController::class, "getBuyerOrders"])->name('home.getBuyerOrders');
 
 Route::post('/stores/{store_id}/products/{product_id}/addToWishlist', [WishListController::class, 'addProductToWishlist'])->name('user.addToWishlist');
