@@ -73,7 +73,14 @@
                         </h4>
 
                         <span class="mtext-106 cl2">
-                            ${{ $product->price }}
+                            @php
+                                use AshAllenDesign\LaravelExchangeRates\Facades\ExchangeRate;
+                                use Carbon\Carbon;
+                            @endphp
+                            @php
+                                $exchangeRates = ExchangeRate::convert($product->price, 'USD', Auth::user()->currency , Carbon::now())
+                            @endphp
+                            {{ number_format($exchangeRates, 2)}}
                         </span>
 
                         <p class="stext-102 cl3 p-t-23">

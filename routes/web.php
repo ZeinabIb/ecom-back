@@ -7,6 +7,7 @@ use App\Http\Controllers\StoreController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\WishListController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CurrencyController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,6 +21,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
 
 Route::get('/chat-users', [UserController::class, 'index']);
+
+Route::get('/changecurrency', [CurrencyController::class, 'changeCurrency'])->name('home.changecurrency');
 
 
 Route::get('/', [HomeController::class, 'HomeInfo'])->name('home.home')->middleware('auth');
