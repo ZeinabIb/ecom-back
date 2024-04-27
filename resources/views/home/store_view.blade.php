@@ -112,10 +112,10 @@
                                         {{ $product->name }}
                                     </a>
                                     <span class="stext-105 cl3">
-                                        @php
-                                            // use AshAllenDesign\LaravelExchangeRates\Facades\ExchangeRate;
-                                            // use Carbon\Carbon;
-                                        @endphp
+                                        {{-- @php
+                                            use AshAllenDesign\LaravelExchangeRates\Facades\ExchangeRate;
+                                            use Carbon\Carbon;
+                                        @endphp --}}
                                         @php
                                             $exchangeRates = AshAllenDesign\LaravelExchangeRates\Facades\ExchangeRate::convert($product->price, 'USD', Auth::user()->currency , Carbon\Carbon::now())
                                         @endphp

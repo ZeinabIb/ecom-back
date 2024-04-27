@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\User;
+use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -45,6 +47,14 @@ class AuthController extends Controller
                         'email' => $user->getEmail(),
                         $providerIdColumn => $user->getId(),
                         'email_verified_at' => now(),
+                    ]);
+
+                    Cart::create([
+                        'buyer_id' => $newUser->id,
+                    ]);
+            
+                    Wishlist::create([
+                        'buyer_id' => $newUser->id,
                     ]);
 
                     Auth::login($newUser);

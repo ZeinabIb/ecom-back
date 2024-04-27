@@ -93,6 +93,7 @@ Route::get('/fetch-messages/{userId}', [UserController::class, 'fetchMessages'])
 ////////////////////////////
 
 use App\Http\Controllers\SellerController;
+use App\Models\Product;
 use App\Models\Store;
 
 Route::get('/sellers/{seller}', [SellerController::class, 'show'])->name('sellers.show')->middleware('checkSeller');
@@ -116,15 +117,18 @@ Route::post('/sellers/{seller}/editStore/{store}/auctions/{auction}/invite', [Se
 Route::get('/sellers/order/{id}', [SellerController::class, 'viewOrder'])->name('sellers.viewOrder')->middleware('checkSeller');
 Route::get('/sellers/order/{id}/changeOrderStatus', [SellerController::class, 'changeOrderStatus'])->name('sellers.changeOrderStatus')->middleware('checkSeller');
 
-// Route::middleware([
-//     'auth:sanctum',
-//     config('jetstream.auth_session'),
-//     'verified',
-// ])->group(function () {
-//     Route::get('/', function () {
-//         return view('home.home');
-//     })->name('home.home');
-// });
+Route::middleware([
+    'auth:sanctum',
+    config('jetstream.auth_session'),
+    'verified',
+])->group(function () {
+    Route::get('/', function () {
+        $stores = Store::take(3)->get();
+        $products = Product::take(3)->get();
+
+        return view('home.home')->with(['all_stores' => $stores])->with(['all_products' => $products]);
+    })->name('home.home');
+});
 
 
 

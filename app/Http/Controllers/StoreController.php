@@ -313,7 +313,12 @@ class StoreController extends Controller
     public function getProducts($store_id){
             try {
                 $store = Store::find($store_id);
-                return view('home.store_view')->with(['all_products'=>$store->products, 'all_categories' => $store->categories]);
+                // dd($store->products);
+                if($store->products->isNotEmpty()){
+                    return view('home.store_view')->with(['all_products'=>$store->products, 'all_categories' => $store->categories]);
+                }
+
+                return redirect()->route('home.home');
 
                 // return response()->json(['message' => 'Succesfully retreived products for store named '. $store->name .'.', 'data' => $store->products], 200);
             } catch (\Throwable $th) {

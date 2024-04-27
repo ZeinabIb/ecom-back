@@ -56,7 +56,7 @@
                 @if ($seller)
                     <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" value="{{ $seller->username }}" disabled>
+                        <input type="text" class="form-control" id="username" name="username" value="{{ $seller->name }}" disabled>
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>

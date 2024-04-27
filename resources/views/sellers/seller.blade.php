@@ -107,6 +107,7 @@
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Store Name</th>
                             <th>Total</th>
                             <th>Payement Status</th>
                             <th>Order Status</th>
@@ -119,6 +120,7 @@
                         @foreach($orders as $order)
                             <tr>
                                 <td>{{ $order->id }}</td>
+                                <td>{{ $order->products[0]->store->name }}</td>
                                 <td>$ {{ number_format($order->total_amount, 2) }}</td>
                                 <td>{{ $order->payment_status }}</td>
                                 <td>{{ $order->order_status }}</td>
